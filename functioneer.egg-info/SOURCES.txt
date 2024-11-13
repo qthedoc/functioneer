@@ -1,0 +1,10 @@
+LICENSE
+README.md
+setup.py
+functioneer/__init__.py
+functioneer/main.py
+functioneer.egg-info/PKG-INFO
+functioneer.egg-info/SOURCES.txt
+functioneer.egg-info/dependency_links.txt
+functioneer.egg-info/requires.txt
+functioneer.egg-info/top_level.txt
