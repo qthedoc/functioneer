@@ -2,7 +2,6 @@
 
 **Author**: Quinn Marsh  
 **Date**: October 21, 2024  
-**Version**: 0.1.0  
 
 Functioneer is a powerful Python package designed to provide a quick and user-friendly interface for setting up and running automated analyses on functions. With Functioneer, you can configure and execute functions with unlimited combinations of inputs, making it perfect for optimizations, parameter sweeps, testing, and any scenario where you need efficient multi-parameter control over a function’s execution.
 

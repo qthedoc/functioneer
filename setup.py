@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 setup(
     # Basic package information
     name='functioneer',
-    version='0.1',
+    version='0.1.0',
 
     # Package author details
     author='Quinn Marsh',
