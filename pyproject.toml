@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "functioneer"
 version = "0.0.1"
-description = "Functioneer is a powerful Python package providing quick setup of automated analyses on functions."
+description = "Functioneer is a Python package that simplifies the setup of automated analyses for your functions."
 readme = "README.md"
 license = { file = "LICENSE" }
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
