@@ -1,0 +1,50 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "functioneer"
+version = "0.0.1"
+description = "Functioneer is a powerful Python package providing quick setup of automated analyses on functions."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
+maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
+homepage = "https://github.com/qthedoc/functioneer"
+keywords = ["functioneer", "analysis", "automation", "autorun"]
+requires-python = ">=3.10"
+
+[project.dependencies]
+numpy = ">=1.18.5"
+scipy = ">=1.5.2"
+pandas = ">=1.0.5"
+
+[project.classifiers]
+development_status = "Development Status :: 2 - Pre-Alpha"
+intended_audience = "Intended Audience :: Science/Research"
+topic = "Topic :: Software Development :: Libraries"
+license = "License :: OSI Approved :: MIT License"
+programming_languages = [
+  "Programming Language :: Python :: 3.6",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/qthedoc/functioneer"
+"Bug Reports" = "https://github.com/qthedoc/functioneer/issues"
+"Funding" = "https://donate.pypi.org"
+"Say Thanks!" = "http://quinnmarsh.com"
+"Source" = "https://github.com/qthedoc/functioneer"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["*"]
+
+[tool.setuptools]
+include-package-data = true
