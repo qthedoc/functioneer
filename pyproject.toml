@@ -11,7 +11,7 @@ description = "A library providing easy automated analysis for your functions."
 readme = "README.md"
 license = { text = "MIT" }
 keywords = ["functioneer", "analysis", "automation", "autorun", "trade space", "digital twin"]
-requires-python = ">=3.10"
+requires-python = ">=3.7"
 dependencies = [
   "numpy>=1.18.5",
   "scipy>=1.5.2",
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
   "License :: OSI Approved :: MIT License",

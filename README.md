@@ -16,29 +16,29 @@ Functioneer is a Python package that automates the analysis of ANY function, ena
 Functioneer is a powerful system for defining and executing complex analysis pipelines. At its core, the toolkit organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These steps modify the parameters in various ways, such as defining new parameters, updating existing parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
 
 ### Terms
-#### AnalysisModule
-* Definition: The central container for an analysis pipeline.
-* Function: Holds a sequence of analysis steps and manages a set of parameters that flow through the pipeline.
+* AnalysisModule
+    * Definition: The central container for an analysis pipeline.
+    * Function: Holds a sequence of analysis steps and manages a set of parameters that flow through the pipeline.
 
-#### Parameters
-* Definition: Named entities that represent inputs, intermediate values, or outputs of the analysis.
-* Function: Can be created, modified, or used in computations during analysis steps.
+* Parameters
+    * Definition: Named entities that represent inputs, intermediate values, or outputs of the analysis.
+    * Function: Can be created, modified, or used in computations during analysis steps.
 
-#### Analysis Steps
-* Definition: Individual operations performed during the analysis.
-* Function: Modify parameters by defining new ones, updating existing values, forking the analysis, or executing/optimizing functions.
+* Analysis Steps
+    * Definition: Individual operations performed during the analysis.
+    * Function: Modify parameters by defining new ones, updating existing values, forking the analysis, or executing/optimizing functions.
 
-#### Fork
-* Definition: A special type of *analysis step* that splits the pipeline into multiple branches.
-* Function: Creates independent branches where each branch explores a different value or configuration for a given parameter.
+* Fork
+    * Definition: A special type of *analysis step* that splits the pipeline into multiple branches.
+    * Function: Creates independent branches where each branch explores a different value or configuration for a given parameter.
 
-#### Branch
-* Definition: One of the independent paths created by a Fork.
-* Function: Represents a distinct variation of the analysis, each processing a specific set of parameter values.
+* Branch
+    * Definition: One of the independent paths created by a Fork.
+    * Function: Represents a distinct variation of the analysis, each processing a specific set of parameter values.
 
-#### Leaf
-* Definition: The endpoint of a branch after all analysis steps have been executed.
-* Function: Represents the final state of parameters for that branch. Each leaf corresponds to a specific combination of parameter values and results. When results are tabulated, each row corresponds to a leaf.
+* Leaf
+    * Definition: The endpoint of a branch after all analysis steps have been executed.
+    * Function: Represents the final state of parameters for that branch. Each leaf corresponds to a specific combination of parameter values and results. When results are tabulated, each row corresponds to a leaf.
 
 ## Installation
 
