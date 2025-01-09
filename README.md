@@ -61,7 +61,7 @@ def rosenbrock(x, y, a, b):
 ```
 
 ### Example 1: The Basics (Defining Parameters and Executing a Function)
-Set up an *analysis sequence* by defining four parameters (the inputs needed for the rosenbrock function), then executing the function (with parameter ids matched to kwargs)
+Set up an *analysis sequence* by defining four parameters (the inputs needed for the Rosenbrock function), then executing the function (with parameter ids matched to kwargs)
 
 ```
 import functioneer as fn
@@ -82,7 +82,6 @@ results = anal.run()
 print(results['df'])
 ```
 
-Note: the `results['df']` is a pandas DataFrame with runtime and datetime fields included
 ```
 Output:
    runtime  a    b  x  y  rosen                   datetime
@@ -91,12 +90,14 @@ Output:
 
 As predicted, the `rosen` parameter evaluates to 0 when a=1, b=100, x=1, y=1
 
+Note: the `results['df']` is a pandas DataFrame with runtime and datetime fields included
+
 But lets say you want to test a range of values for some parameters...
 
 ### Example 2: Single Parameter Forks (Testing Variations of a Parameter)
-If you want to test a set of values for a parameter you can create a *fork* in the *analysis sequence*, resulting in several *analysis branches*. In each *analysis branch*, the respective parameter will be set to one the values in the set.
+If you want to test a set of values for a parameter you can create a *fork* in the *analysis sequence*. This splits the analysis into multiple *branches*, each exploring different values for a the given parameter.
 
-Say we want to evaluate and plot the rosenbrock surface over the x-y domain. Lets evaluate a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 total points...
+Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* or *leaves*...
 ```
 # Create new analysis
 anal = fn.AnalysisModule()
@@ -125,7 +126,7 @@ Output:
 The parameters `x` and `y` were given 3 and 2 fork values respectively, this created 6 total *leaves* (end of each branch) in the analysis. `rosen` has been evaluated for each *leaf*. Essentially you have begun to map the Rosenbrock function over the x-y domain.
 
 ### Example 3: Optimization
-Lets say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several different flavors rosenbrock functions (each with different `a` nnd `b` parameters)...
+Lets say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several different flavors Rosenbrock functions (each with different `a` nnd `b` parameters). You would then fork the analysis at parameters `a` and `b` then after the forks perform the optimization on each branch.
 ```
 # Create new analysis
 anal = fn.AnalysisModule()
@@ -152,7 +153,7 @@ Output:
 4  0.011093  2  100  1.999731  3.998866  4.067518e-07 
 5  0.030206  2  200  1.999554  3.998225  2.136755e-07 
 ```
-For each branch, the Rosenbrock Function has been minimized and the solution values for 'x', 'y' and 'rosen' are shown.
+For each branch, the Rosenbrock Function has been minimized and the solution values for `x`, `y` and `rosen` are shown.
 
 Note: the initial values used in the optimization are just the existing parameter values (in this case x and y are 0).
 
@@ -163,7 +164,7 @@ If you want to test specific combinations of parameters (instead of creating a g
 ```
 fn.Fork(('a', 'b'), value_sets=((0, 1, 2), (0, 100, 200)))
 ```
-### Example 5: Conditional Analysis Step's
+### Example 5: Analysis Steps can be Conditional
 Any analysis step can be given a conditional function that must return true at runtime or else the analysis step will be skipped. One use case for this is when you want to skip an expensive analysis step if the parameters aren't looking good.
 
 As an arbitrary example, assume that we only care about cases where the optimized value of `y` is above 0.5. Also assume `expensive_func` is costly to run and we want to avoid running it when `y<0.5`. 
@@ -196,7 +197,7 @@ Output:
 4  0.016001  2  100  1.999731  3.998866  4.067518e-07         5.998596  
 5  0.020995  2  200  1.999554  3.998225  2.136755e-07         5.997779  
 ```
-Notice how the evaluation of `expensive_param` has been skipped where `y` did not meet the criteria `y>0.5`
+Notice how the evaluation of `expensive_param` has been skipped where the optimized `y` did not meet the criteria `y>0.5`
 
 ## License
 
