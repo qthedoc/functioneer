@@ -1,3 +1,25 @@
+# MIT License
+# Copyright (c) 2025 Quinn Marsh
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
+
 from typing import Callable
 import logging
 import copy
@@ -6,7 +28,6 @@ from datetime import datetime
 from time import time
 import numpy as np
 from scipy.optimize import minimize
-
 
 from functioneer.parameter import ParameterSet, Parameter
 from functioneer.util import call_with_matched_kwargs
@@ -156,7 +177,7 @@ class Execute(AnalysisStep):
 
     def run(self, paramset):
         """
-        Executes funciton and modifies paramset
+        Executes function and modifies paramset
 
         TODO future args: auto_add_new_args=True
         """
@@ -192,7 +213,7 @@ class Execute(AnalysisStep):
                         
             # next_paramsets.update_values(results)
 
-            # TODO this should be funcitonalized
+            # TODO this should be functionalized
             # paramset.update_param_values(results)
             for id, val in output.items():
                 next_paramset.update_param(id, value=val)
@@ -216,7 +237,7 @@ class Optimize(AnalysisStep):
         super().__init__(condition)
 
         # Validate stuff
-        # if not is_valid_kwarg_func(func): TODO make this funciton validator a thing
+        # if not is_valid_kwarg_func(func): TODO make this function validator a thing
         #     raise ValueError(f"Invalid Optimize: 'func' is not a valid objective function: {obj_param_id}")
         if not isinstance(func, Callable):
             raise ValueError(f"Invalid Optimize: 'func' is not a valid objective function: {obj_param_id}")        
@@ -226,7 +247,7 @@ class Optimize(AnalysisStep):
             raise ValueError(f"Invalid Optimize: 'obj_param_id' is not a valid param id: {obj_param_id}")
         self.obj_param_id = obj_param_id
 
-        # TODO funcitonalize these checks so they can be onelinesrs
+        # TODO functionalize these checks so they can be one-liners
         if not Parameter.is_valid_id_iterable(opt_param_ids):
             raise ValueError(f"Invalid Optimize: 'obj_param_id' is not a valid param id tuple: {opt_param_ids}")        
         self.opt_param_ids = opt_param_ids
@@ -335,7 +356,7 @@ class AnalysisModule():
 
     def execute_step(self, paramset: ParameterSet, step_idx:int):
         """
-        Runs a single step of the analysis sequence, then recursivly calls the next.
+        Runs a single step of the analysis sequence, then recursively calls the next.
         """
 
         # End analysis branch if no more steps

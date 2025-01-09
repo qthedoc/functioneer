@@ -7,10 +7,10 @@ name = "functioneer"
 version = "0.0.1"
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
-description = "Functioneer is a Python package that simplifies the setup of automated analyses for your functions."
+description = "A library providing easy automated analysis for your functions."
 readme = "README.md"
-license = { file = "LICENSE" }
-keywords = ["functioneer", "analysis", "automation", "autorun"]
+license = { text = "MIT" }
+keywords = ["functioneer", "analysis", "automation", "autorun", "trade space", "digital twin"]
 requires-python = ">=3.10"
 dependencies = [
   "numpy>=1.18.5",
@@ -22,7 +22,7 @@ classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
-  "Programming Language :: Python :: 3.6",
+  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
