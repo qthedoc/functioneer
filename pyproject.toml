@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "functioneer"
-version = "0.0.1"
+version = "0.1.0"
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 description = "A library providing easy automated analysis for your functions."
