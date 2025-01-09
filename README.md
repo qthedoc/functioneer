@@ -49,7 +49,7 @@ pip install functioneer
 ```
 
 ## Getting Started
-Here's a few quick examples of how to use `functioneer`. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
+Below are a few quick examples of how to use Functioneer. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
 
 ### Choosing a Function to Analyze
 Functioneer is designed to analyze ANY function(s) with ANY number of inputs and outputs. For the following examples, the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) is used for its relative simplicity, 4 inputs (plenty to play with) and its historical significance as an optimization benchmark.
