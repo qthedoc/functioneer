@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.1.1](https://github.com/qthedoc/functioneer/compare/v0.1.0...v0.1.1) (2025-01-09)
+
+
+### Documentation
+
+* README ([0405b44](https://github.com/qthedoc/functioneer/commit/0405b446b36603d59137ca56b131833bd6705b67))
+* README ([0df220d](https://github.com/qthedoc/functioneer/commit/0df220de6264a437033b4043cf5c75206ee7356a))
+* README and toml ([227c040](https://github.com/qthedoc/functioneer/commit/227c0403cc2fcd2d3353589983bf35c41455248d))
+* README polished ([f4e4af9](https://github.com/qthedoc/functioneer/commit/f4e4af93d2fa6d82f9a7a5358e24d20fcce8fe1f))
+
 ## 0.1.0 (2025-01-09)
 
 
