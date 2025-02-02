@@ -83,7 +83,8 @@ class ParameterSet(dict):
     
     def update_param(self, id, value=None):
         """
-        Updates attributes of parameter matching 'id' or creates a new parameter if none match
+        Updates attributes of parameter matching 'id'
+        Creates a new parameter if no match
 
         TODO add other attributes here if needed
         """ 
@@ -94,6 +95,10 @@ class ParameterSet(dict):
                 self.add_param(Parameter(id, value))
 
     def update_param_values(self, values_dict: dict):
+        """
+        Updates values of existing parameters. 
+        Adds new parameter if key does not match existing.
+        """
         for id, val in values_dict.items():
             self.update_param(id, val)
 

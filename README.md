@@ -70,12 +70,12 @@ import functioneer as fn
 anal = fn.AnalysisModule() # its not ānal is anál!
 
 # Define analysis sequence
-anal.add(fn.Define('a', 1)) # Define parameter 'a'
-anal.add(fn.Define('b', 100)) # Define parameter 'b'
-anal.add(fn.Define('x', 1)) # Define parameter 'x'
-anal.add(fn.Define('y', 1)) # Define parameter 'y'
+anal.add.define('a', 1) # Define parameter 'a'
+anal.add.define('b', 100) # Define parameter 'b'
+anal.add.define('x', 1) # Define parameter 'x'
+anal.add.define('y', 1) # Define parameter 'y'
 
-anal.add(fn.Execute(func=rosenbrock, output_param_ids='rosen')) # Execute function with parameter ids matched to kwargs
+anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function with parameter ids matched to kwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -99,17 +99,18 @@ But let's say you want to test a range of values for some parameters...
 If you want to test a set of values for a parameter you can create a *fork* in the *analysis sequence*. This splits the analysis into multiple *branches*, each exploring different values for a the given parameter.
 
 Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
+
+Note: some boiler plate can be removed by defining initial parameters in the AnalysisModule() declaration
 ```
 # Create new analysis
-anal = fn.AnalysisModule()
+init_params = dict(a=1, b=100, x=1, y=1) # initial parameters will be overwritten by forks, optimizations, etc
+anal = fn.AnalysisModule(init_params)
 
 # Define analysis sequence
-anal.add(fn.Define('a', 1)) # Define parameter 'a'
-anal.add(fn.Define('b', 100)) # Define parameter 'b'
-anal.add(fn.Fork('x', value_sets=(0, 1, 2))) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
-anal.add(fn.Fork('y', value_sets=(1, 10))) # Fork analysis, create a branch for each value of 'y': 1, 10
+anal.add.fork('x', value_sets=(0, 1, 2)) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
+anal.add.fork('y', value_sets=(1, 10)) # Fork analysis, create a branch for each value of 'y': 1, 10
 
-anal.add(fn.Execute(func=rosenbrock, output_param_ids='rosen')) # Execute function (for each branch) with parameters matched to kwargs
+anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function (for each branch) with parameters matched to kwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -131,15 +132,13 @@ The parameters `x` and `y` were given 3 and 2 fork values respectively, this cre
 Lets say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several different flavors Rosenbrock functions (each with different `a` nnd `b` parameters). You would then fork the analysis at parameters `a` and `b` then after the forks perform the optimization on each branch.
 ```
 # Create new analysis
-anal = fn.AnalysisModule()
+anal = fn.AnalysisModule(dict(x=0, y=0))
 
 # Define analysis sequence
-anal.add(fn.Fork('a', value_sets=(1, 2))) # Fork analysis, create a branch for each value of 'a': 0, 1, 2
-anal.add(fn.Fork('b', value_sets=(0, 100, 200))) # Fork analysis, create a branch for each value of 'b': 0, 100, 200
-anal.add(fn.Define('x', 0))
-anal.add(fn.Define('y', 0))
+anal.add.fork('a', value_set=(1, 2)) # Fork analysis, create a branch for each value of 'a': 0, 1, 2
+anal.add.fork('b', value_set=(0, 100, 200)) # Fork analysis, create a branch for each value of 'b': 0, 100, 200
 
-anal.add(fn.Optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y')))
+anal.add.optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y'))
 
 # Run the analysis sequence
 results = anal.run()
@@ -162,9 +161,26 @@ Note: the initial values used in the optimization are just the existing paramete
 Note: due to optimization the runtimes for some of the analyses have gone up.
 
 ### Example 4: Multi-parameter Forks
-If you want to test specific combinations of parameters (instead of creating a grid) use a *multi-parameter fork*. The following will result in 3 branches: (a=0, b=0), (a=1, b=100), (a=2, b=200)
+If you want to test specific combinations of parameters (instead of creating a grid) use a *multi-parameter fork*.
 ```
-fn.Fork(('a', 'b'), value_sets=((0, 1, 2), (0, 100, 200)))
+# Create new analysis
+anal = fn.AnalysisModule(dict(a=1, b=100))
+
+# Define analysis sequence
+anal.add.fork.multi(('x', 'y'), value_sets=((0, 1, 2), (0, 10, 20))) # Fork analysis, create a branch for each value of 'y': 1, 10
+
+anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function (for each branch) with parameters matched to kwargs
+
+# Run the analysis sequence
+results = anal.run()
+print(results['df'].drop(columns='datetime'))
+```
+```
+Output:
+   runtime  a    b  x   y  rosen
+0      0.0  1  100  0   0      1
+1      0.0  1  100  1  10   8100
+2      0.0  1  100  2  20  25601
 ```
 ### Example 5: Analysis Steps can be Conditional
 Any *analysis step* can be given a conditional function that must return true at runtime or else the *analysis step* will be skipped. One use case for this is when you want to skip an expensive *analysis step* if the parameters aren't looking good.
@@ -172,21 +188,17 @@ Any *analysis step* can be given a conditional function that must return true at
 As an arbitrary example, assume that we only care about cases where the optimized value of `y` is above 0.5. Also assume `expensive_func` is costly to run and we want to avoid running it when `y<0.5`. 
 ```
 # Create new analysis
-anal = fn.AnalysisModule()
+anal = fn.AnalysisModule(dict(x=0, y=0))
 
 # Define analysis sequence
-anal.add(fn.Fork('a', value_sets=(1, 2)))
-anal.add(fn.Fork('b', value_sets=(0, 100, 200)))
-anal.add(fn.Define('x', 0))
-anal.add(fn.Define('y', 0))
-
-anal.add(fn.Optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y')))
+anal.add.fork('a', value_set=(1, 2))
+anal.add.fork('b', value_set=(0, 100, 200))
+anal.add.optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y'))
 
 # Only evaluate 'expensive_func' if the optimized 'y' is above 0.5
 expensive_func = lambda x, y: x+y
-anal.add(fn.Execute(func=expensive_func, output_param_ids='expensive_param', condition=lambda y: y>0.5))
+anal.add.execute(func=expensive_func, output_param_ids='expensive_param', condition=lambda y: y>0.5)
 
-# Run the analysis sequence
 results = anal.run()
 print(results['df'].drop(columns='datetime'))
 ```

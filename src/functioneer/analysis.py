@@ -264,7 +264,7 @@ class Optimize(AnalysisStep):
         # Copy
         next_paramset = copy.deepcopy(paramset)
 
-        # create objective wrapper where x is a list of opt vars
+        # create objective wrapper that maps x (a list of opt vars) to kwargs in the optimization function
         def objective_wrapper(x): # (func, next_paramset, opt_param_ids)
             '''
             evaluates the user supplied objective function using fresh optimizer values from x.
@@ -310,29 +310,123 @@ class End(AnalysisStep):
             return super().run(paramset)
 
 class AnalysisModule():
-    def __init__(self, name='') -> None:
+    def __init__(self, init_param_values={}, name='') -> None:
 
-        self.sequence = []
+        # Analysis Setup
+        self.sequence: list[AnalysisStep] = []
         self.finished_leaves:int = 0
+        self.init_paramset: ParameterSet = ParameterSet()
+        self.init_paramset.update_param_values(init_param_values)
 
+        # Namespaces
+        self.add = self.AddNamespace(self)  # Instantiate the namespace
+
+        # Results and Metadata
         self.name = name
-
         self.df: pd.DataFrame = pd.DataFrame()
-
         self.t0 = None
 
         pass
 
-    def add(self, analysis_object: AnalysisStep) -> None:
-        '''
-        appends AnalysisStep to the Analysis Sequence
-        e.g.: define, fork, evaluation or optimization
-        '''
-        # TODO Validate AnalysisStep
+    class AddNamespace:
+        """Namespace for adding different types of analysis steps."""
 
-        # TODO analysis_object.initialize(self.sequence)
+        def __init__(self, parent):
+            self.parent: AnalysisModule = parent
+            self.define = self.DefineNamespace(parent)
+            self.fork = self.ForkNamespace(parent)
+            self.optimize = self.OptimizeNamespace(parent)
+            self.execute = self.ExecuteNamespace(parent)
 
-        self.sequence.append(analysis_object)
+        def __call__(self,
+            analysis_object: AnalysisStep
+        ) -> None:
+            '''
+            appends AnalysisStep to the Analysis Sequence
+            e.g.: define, fork, evaluation or optimization
+            '''
+            # TODO Validate AnalysisStep
+
+            # TODO analysis_object.initialize(self.sequence)
+
+            self.parent.sequence.append(analysis_object)
+
+        class DefineNamespace:
+            def __init__(self, parent):
+                self.parent: AnalysisModule = parent
+
+            def __call__(self, 
+                name: str,
+                value = None,
+                # func = None,
+                # func_output_mode = 'single',
+                condition = None
+            ):
+                self.parent.sequence.append(Define(name, value, condition))
+
+        class ForkNamespace:
+            def __init__(self, parent):
+                self.parent: AnalysisModule = parent
+
+            def __call__(self, 
+                param_id,
+                value_set, # value_sets
+                condition = None
+            ):
+                self.parent.sequence.append(Fork(param_id, value_set, condition))
+
+            def multi(self,
+                param_ids: tuple[str, ...],
+                value_sets: tuple[tuple, ...],
+                condition: Callable[[], bool] = None
+            ):
+                self.parent.sequence.append(Fork(param_ids, value_sets, condition))
+
+            def copy(self,
+                n: int,
+                condition: Callable[[], bool] = None
+            ):
+                raise TypeError("Fork.copy not setup yet")
+                self.parent.sequence.append(Fork(n, condition))
+
+            
+        class ExecuteNamespace:
+            def __init__(self, parent):
+                self.parent: AnalysisModule = parent
+
+            def __call__(self, 
+                func: Callable,
+                output_param_ids: str = None,
+                input_param_ids: str = None,
+                condition = None
+            ):
+                self.parent.sequence.append(Execute(func, output_param_ids, input_param_ids, condition))
+
+        class OptimizeNamespace:
+            def __init__(self, parent):
+                self.parent: AnalysisModule = parent
+
+            def __call__(self, 
+                func,
+                obj_param_id = None,
+                opt_param_ids = None,
+                method = 'SLSQP',
+                ftol = None,
+                xtol = None,
+                func_output_mode = 'single',
+                condition = None
+            ):
+                self.parent.sequence.append(Optimize(
+                    func,
+                    obj_param_id,
+                    opt_param_ids,
+                    method,
+                    ftol,
+                    xtol,
+                    func_output_mode,
+                    condition
+                ))
+
 
     def run(self,
             create_pandas = True,
@@ -342,7 +436,7 @@ class AnalysisModule():
 
         self.t0 = time()
         self.finished_leaves = 0
-        self.execute_step(ParameterSet(), step_idx=0) # start on step 0
+        self.execute_step(self.init_paramset, step_idx=0) # start on step 0
 
         print('done with analysis!')
 
