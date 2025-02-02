@@ -1,7 +1,7 @@
 # Functioneer
 
 **Author**: Quinn Marsh  
-**Date**: January 08, 2025
+**Date**: February 02, 2025
 
 Functioneer is a Python package that automates the analysis of ANY function, enabling you to test and optimize with unlimited combinations of parameters. Whether you're performing parameter sweeps, sensitivity testing, or optimizing digital twins, Functioneer lets you queue up thousands or even millions of tests in seconds. Easily retrieve and analyze results in formats like pandas for seamless integration into your analysis workflows.
 
