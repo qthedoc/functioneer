@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/qthedoc/functioneer/compare/v0.1.1...v0.2.0) (2025-02-02)
+
+
+### Features
+
+* simpler namespace API ([867c3aa](https://github.com/qthedoc/functioneer/commit/867c3aa5ba6977ded6eb65f0ad47bedd939b83b4))
+
 ## [0.1.1](https://github.com/qthedoc/functioneer/compare/v0.1.0...v0.1.1) (2025-01-09)
 
 
