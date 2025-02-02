@@ -129,7 +129,7 @@ Output:
 The parameters `x` and `y` were given 3 and 2 fork values respectively, this created 6 total *leaves* (end of each branch) in the analysis. `rosen` has been evaluated for each *leaf*. Essentially you have begun to map the Rosenbrock function over the x-y domain.
 
 ### Example 3: Optimization
-Lets say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several different flavors Rosenbrock functions (each with different `a` nnd `b` parameters). You would then fork the analysis at parameters `a` and `b` then after the forks perform the optimization on each branch.
+Let's say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several variations of `a` and `b` (different flavors Rosenbrock functions). You would fork the analysis at parameters `a` and `b`, then perform an optimization on each branch.
 ```
 # Create new analysis
 anal = fn.AnalysisModule(dict(x=0, y=0))
@@ -182,8 +182,10 @@ Output:
 1      0.0  1  100  1  10   8100
 2      0.0  1  100  2  20  25601
 ```
+Notice 3 branches have been create for each combination of `x` and `y`: `(x=0, y=0), (x=1, y=10), (x=2, y=20)`
+
 ### Example 5: Analysis Steps can be Conditional
-Any *analysis step* can be given a conditional function that must return true at runtime or else the *analysis step* will be skipped. One use case for this is when you want to skip an expensive *analysis step* if the parameters aren't looking good.
+Any *analysis step* can be given a conditional function that must return true at runtime or else the *analysis step* will be skipped. An example use case is when you want to skip an expensive *analysis step* if the parameters aren't looking "good".
 
 As an arbitrary example, assume that we only care about cases where the optimized value of `y` is above 0.5. Also assume `expensive_func` is costly to run and we want to avoid running it when `y<0.5`. 
 ```
