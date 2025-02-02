@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/qthedoc/functioneer/compare/v0.2.0...v0.2.1) (2025-02-02)
+
+
+### Documentation
+
+* README and added dist_record ([41c6cad](https://github.com/qthedoc/functioneer/commit/41c6cadaa8bed8498c0027ec5f495698a6e6dc12))
+* README date ([36ee4ff](https://github.com/qthedoc/functioneer/commit/36ee4fffd2906a4fa560fbdda1b9cc8b6d395505))
+
 ## [0.2.0](https://github.com/qthedoc/functioneer/compare/v0.1.1...v0.2.0) (2025-02-02)
 
 
