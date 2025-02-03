@@ -13,7 +13,7 @@ Functioneer is a Python package that automates the analysis of ANY function, ena
 
 ## How Functioneer Works
 
-Functioneer is a powerful system for defining and executing complex analysis pipelines. At its core, the toolkit organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These steps modify the parameters in various ways, such as defining new parameters, updating existing parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
+At its core, functioneer organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These steps modify the parameters in various ways, such as defining new parameters, updating existing parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications. Functioneer *Forks* are what let you queue up thousands or even millions of parameter combinations in only a few lines of code.
 
 ### Terms
 * AnalysisModule
