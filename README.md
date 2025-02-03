@@ -62,6 +62,7 @@ def rosenbrock(x, y, a, b):
 
 ### Example 1: The Basics (Defining Parameters and Executing a Function)
 Set up an *analysis sequence* by defining four parameters (the inputs needed for the Rosenbrock function), then executing the function (with parameter ids matched to kwargs)
+Note: Parameter IDs MUST match your function's args
 
 ```
 import functioneer as fn
@@ -91,14 +92,13 @@ Output:
 
 As predicted, the `rosen` parameter evaluates to 0 when a=1, b=100, x=1, y=1
 
-Note: the `results['df']` is a pandas DataFrame containing all parameters in addition to *runtime* and *datetime* fields
-
-But let's say you want to test a range of values for some parameters...
+Note: the `results['df']` is a pandas DataFrame containing all parameters in addition to *runtime* and *datetime* for the given branch
 
 ### Example 2: Single Parameter Forks (Testing Variations of a Parameter)
+Let's say you want to test a range of values for some parameters...
 If you want to test a set of values for a parameter you can create a *fork* in the *analysis sequence*. This splits the analysis into multiple *branches*, each exploring different values for a the given parameter.
 
-Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
+Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock on a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
 
 Note: some boiler plate can be removed by defining initial parameters in the AnalysisModule() declaration
 ```
@@ -156,7 +156,7 @@ Output:
 ```
 For each branch, the Rosenbrock Function has been minimized and the solution values for `x`, `y` and `rosen` are shown.
 
-Note: the initial values used in the optimization are just the existing parameter values (in this case x and y are 0).
+Note: the initial values (`x0`) used in the optimization are just the existing parameter values (in this case x and y are 0).
 
 Note: due to optimization the runtimes for some of the analyses have gone up.
 
