@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.2.2](https://github.com/qthedoc/functioneer/compare/v0.2.1...v0.2.2) (2025-02-04)
+
+
+### Documentation
+
+* new descripiton ([9a91dbc](https://github.com/qthedoc/functioneer/commit/9a91dbc39aa2d1c413db9f0307c43ee6b1838529))
+* README ([f8c0205](https://github.com/qthedoc/functioneer/commit/f8c0205509ff3602984bbc83e4bf780061ed58f9))
+* README ([8462d61](https://github.com/qthedoc/functioneer/commit/8462d613b4a541b4adc7d8d33082dd05f85d7b05))
+
 ## [0.2.1](https://github.com/qthedoc/functioneer/compare/v0.2.0...v0.2.1) (2025-02-02)
 
 
