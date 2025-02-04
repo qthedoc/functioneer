@@ -14,14 +14,12 @@ Functioneer lets you effortlessly explore function behavior with automated batch
 
 ## How Functioneer Works
 
-At its core, functioneer organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These steps modify the parameters in various ways, such as defining new parameters, updating existing parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications. Functioneer *Forks* are what let you queue up thousands or even millions of parameter combinations in only a few lines of code.
+At its core, functioneer organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These *analysis steps* modify the parameters in various ways, such as defining new parameters, modifying parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. Functioneer *Forks* are what let you queue up thousands or even millions of parameter combinations in only a few lines of code. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
 
 <details>
 <summary>
-Important Terms
+<span style="font-size:1.5em;">Important Terms</span>
 </summary>
-
-### Terms
 
 * AnalysisModule
     * Definition: The central container for an analysis pipeline.
