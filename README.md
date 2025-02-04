@@ -1,9 +1,10 @@
 # Functioneer
 
 **Author**: Quinn Marsh  
-**Date**: February 02, 2025
+**Date**: February 02, 2025\
+**PyPI**: https://pypi.org/project/functioneer/
 
-Functioneer is a Python package that automates the analysis of ANY function, enabling you to test and optimize with unlimited combinations of parameters. Whether you're performing parameter sweeps, sensitivity testing, or optimizing digital twins, Functioneer lets you queue up thousands or even millions of tests in seconds. Easily retrieve and analyze results in formats like pandas for seamless integration into your analysis workflows.
+Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, testing and optimizing with unlimited parameter combinations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
 
 ## Use cases
 
@@ -15,7 +16,13 @@ Functioneer is a Python package that automates the analysis of ANY function, ena
 
 At its core, functioneer organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These steps modify the parameters in various ways, such as defining new parameters, updating existing parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications. Functioneer *Forks* are what let you queue up thousands or even millions of parameter combinations in only a few lines of code.
 
+<details>
+<summary>
+Important Terms
+</summary>
+
 ### Terms
+
 * AnalysisModule
     * Definition: The central container for an analysis pipeline.
     * Function: Holds a sequence of analysis steps and manages a set of parameters that flow through the pipeline.
@@ -39,6 +46,7 @@ At its core, functioneer organizes analyses as pipelines, where a set of *parame
 * Leaf
     * Definition: The endpoint of a branch after all analysis steps have been executed.
     * Function: Represents the final state of parameters for that branch. Each leaf corresponds to a specific combination of parameter values and results. When results are tabulated, each row corresponds to a leaf.
+</details>
 
 ## Installation
 
@@ -51,7 +59,7 @@ pip install functioneer
 ## Getting Started
 Below are a few quick examples of how to use Functioneer. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
 
-### Choosing a Function to Analyze
+### Choose a Function to Analyze
 Functioneer is designed to analyze ANY function(s) with ANY number of inputs and outputs. For the following examples, the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) is used for its relative simplicity, 4 inputs (plenty to play with) and its historical significance as an optimization benchmark.
 
 ```

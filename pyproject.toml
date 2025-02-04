@@ -7,10 +7,10 @@ name = "functioneer"
 version = "0.2.1"
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
-description = "A library providing easy automated analysis for your functions."
+description = "Effortlessly explore function behavior with automated batch analysis."
 readme = "README.md"
 license = { text = "MIT" }
-keywords = ["functioneer", "analysis", "automation", "autorun", "trade space", "digital twin"]
+keywords = ["functioneer", "analysis", "batch run", "automation", "autorun", "trade space", "digital twin"]
 requires-python = ">=3.7"
 dependencies = [
   "numpy>=1.18.5",
