@@ -4,7 +4,7 @@
 **Date**: February 02, 2025\
 **PyPI**: https://pypi.org/project/functioneer/
 
-Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, testing and optimizing with unlimited parameter combinations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
+Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, with various parameter combinations and/or optimizations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
 
 ## Use cases
 
@@ -14,7 +14,13 @@ Functioneer lets you effortlessly explore function behavior with automated batch
 
 ## How Functioneer Works
 
-At its core, functioneer organizes analyses as pipelines, where a set of *parameters* flows sequentially through a series of *analysis steps*. These *analysis steps* modify the parameters in various ways, such as defining new parameters, modifying parameter values, or performing operations like function evaluation and optimization. One of the key features of functioneer is the ability to introduce *forks*, which split the analysis into multiple *branches*, each exploring different values for a specific parameter. Functioneer *Forks* are what let you queue up thousands or even millions of parameter combinations in only a few lines of code. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
+At its core, functioneer organizes analyses as tree where a *set of parameters* starts at the trunk and moves out towards the leaves. Along the way, the *set of parameters* 'flows' through a series of *analysis steps* (each of which can be defined in a single line of code). Each *analysis step* can modify or use the parameters in various ways, such as defining new parameters, modifying parameters, or using the parameters to evaluate or even optimize any function of your choice. One key feature of functioneer is the ability to introduce *forks*: a type of analysis step that splits the analysis into multiple parallel *branches*, each exploring different values for a specific parameter. Using many *Forks* in series allows you to queue up thousands or even millions of parameter combinations with only a few lines of code. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
+
+Summary of most useful types of *analysis steps*:
+- Define: Adds a new parameter to the analysis
+- Fork: Splits the analysis into multiple parallel *branches*, each exploring different values for a specific parameter
+- Execute: Calls a provided function using the parameters
+- Optimize: Quickly set up an optimization by providing a function and defining which parameters are going to be optimized
 
 <details>
 <summary>
@@ -58,17 +64,18 @@ pip install functioneer
 Below are a few quick examples of how to use Functioneer. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
 
 ### Choose a Function to Analyze
-Functioneer is designed to analyze ANY function(s) with ANY number of inputs and outputs. For the following examples, the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) is used for its relative simplicity, 4 inputs (plenty to play with) and its historical significance as an optimization benchmark.
+Functioneer is designed to analyze ANY function(s) with ANY number of inputs and outputs. For the following examples, we use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) for (1) its relative simplicity, (2) 4 inputs (plenty to play with) and (3) its historical significance as an optimization benchmark.
 
 ```
+# Example Function
 # Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
 def rosenbrock(x, y, a, b):
     return (a-x)**2 + b*(y-x**2)**2
 ```
 
 ### Example 1: The Basics (Defining Parameters and Executing a Function)
-Set up an *analysis sequence* by defining four parameters (the inputs needed for the Rosenbrock function), then executing the function (with parameter ids matched to kwargs)
-Note: Parameter IDs MUST match your function's args
+Set up an *analysis sequence* by defining four parameters to match our function, then executing the function 
+Note: Parameter IDs MUST match your function's args, function executions inside functioneer are fully keyword arg based.
 
 ```
 import functioneer as fn
@@ -96,7 +103,7 @@ Output:
 0      0.0  1  100  1  1      0 2025-01-03 17:06:21.252981
 ```
 
-As predicted, the `rosen` parameter evaluates to 0 when a=1, b=100, x=1, y=1
+As we expect, the `rosen` parameter evaluates to 0 when a=1, b=100, x=1, y=1
 
 Note: the `results['df']` is a pandas DataFrame containing all parameters in addition to *runtime* and *datetime* for the given branch
 
@@ -107,9 +114,10 @@ If you want to test a set of values for a parameter you can create a *fork* in t
 Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock on a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
 
 Note: some boiler plate can be removed by defining initial parameters in the AnalysisModule() declaration
+Note: initial parameter values will be overwritten as needed by parameter steps
 ```
 # Create new analysis
-init_params = dict(a=1, b=100, x=1, y=1) # initial parameters will be overwritten by forks, optimizations, etc
+init_params = dict(a=1, b=100, x=1, y=1) # define initial parameters
 anal = fn.AnalysisModule(init_params)
 
 # Define analysis sequence
@@ -162,8 +170,7 @@ Output:
 ```
 For each branch, the Rosenbrock Function has been minimized and the solution values for `x`, `y` and `rosen` are shown.
 
-Note: the initial values (`x0`) used in the optimization are just the existing parameter values (in this case x and y are 0).
-
+Note: the initial values (`x0`) used in the optimization are simply the existing parameter values (in this case x and y are 0) going into the optimization step.
 Note: due to optimization the runtimes for some of the analyses have gone up.
 
 ### Example 4: Multi-parameter Forks
@@ -220,7 +227,7 @@ Output:
 4  0.016001  2  100  1.999731  3.998866  4.067518e-07         5.998596  
 5  0.020995  2  200  1.999554  3.998225  2.136755e-07         5.997779  
 ```
-Notice how the evaluation of `expensive_param` has been skipped where the optimized `y` did not meet the criteria `y>0.5`
+Notice how the evaluation of `expensive_param` has been skipped where the optimized `y` did not meet our criteria `y>0.5`
 
 ## License
 
