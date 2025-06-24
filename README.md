@@ -160,13 +160,13 @@ print(results['df'].drop(columns='datetime'))
 ```
 ```
 Output:
-    runtime  a    b         x         y         rosen 
-0  0.001017  1    0  1.000000  0.000000  4.930381e-32 
-1  0.009276  1  100  0.999763  0.999523  5.772481e-08 
-2  0.007347  1  200  0.999939  0.999873  8.146869e-09 
-3  0.002572  2    0  2.000000  0.000000  0.000000e+00 
-4  0.011093  2  100  1.999731  3.998866  4.067518e-07 
-5  0.030206  2  200  1.999554  3.998225  2.136755e-07 
+    runtime         x         y  a    b    rosenbrock
+0  0.001518  1.000000  0.000000  1    0  4.930381e-32
+1  0.001006  0.999763  0.999523  1  100  5.772481e-08
+2  0.015998  0.999939  0.999873  1  200  8.146869e-09
+3  0.000000  2.000000  0.000000  2    0  0.000000e+00
+4  0.003642  1.999731  3.998866  2  100  4.067518e-07
+5  0.018693  1.999554  3.998225  2  200  2.136755e-07
 ```
 For each branch, the Rosenbrock Function has been minimized and the solution values for `x`, `y` and `rosen` are shown.
 
@@ -189,10 +189,10 @@ print(results['df'].drop(columns='datetime'))
 ```
 ```
 Output:
-   runtime  a    b  x   y  rosen
-0      0.0  1  100  0   0      1
-1      0.0  1  100  1  10   8100
-2      0.0  1  100  2  20  25601
+   runtime  a    b  x   y  rosenbrock
+0      0.0  1  100  0   0           1
+1      0.0  1  100  1  10        8100
+2      0.0  1  100  2  20       25601
 ```
 Notice 3 branches have been create for each combination of `x` and `y`: `(x=0, y=0), (x=1, y=10), (x=2, y=20)`
 
@@ -211,7 +211,7 @@ anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
 
 # Only evaluate 'expensive_func' if the optimized 'y' is above 0.5
 expensive_func = lambda x, y: x+y
-anal.add.execute(func=expensive_func, output_param_ids='expensive_param', condition=lambda y: y>0.5)
+anal.add.execute(func=expensive_func, condition=lambda y: y>0.5)
 
 results = anal.run()
 print(results['df'].drop(columns='datetime'))
