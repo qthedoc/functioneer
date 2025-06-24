@@ -1,7 +1,6 @@
 # Functioneer
 
-**Author**: Quinn Marsh  
-**Date**: February 02, 2025\
+**Author**: Quinn Marsh\
 **PyPI**: https://pypi.org/project/functioneer/
 
 Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, with various parameter combinations and/or optimizations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
