@@ -22,12 +22,13 @@
 
 import logging
 import inspect
+from typing import Any
 
 class Parameter():
     def __init__(self,
             id: str,
             value = None,
-            value_set = None, 
+            # value_set = None, 
             # fun = None,
             # bounds = (None, None),
         ):
@@ -51,17 +52,57 @@ class Parameter():
             else:
                 raise AttributeError(f"Attribute '{attr}' does not exist in the parameter.")
             
+    RESERVED_IDS = {'runtime', 'datetime'}
+
     @staticmethod
-    def is_valid_id(id):
-        # TODO add this to other places
-        return isinstance(id, str) and id != ''
+    def validate_id(id: Any) -> None:
+        """
+        Validate a parameter ID.
+
+        A valid ID is a non-empty string that is not a reserved name (e.g., '_runtime', '_datetime').
+
+        Parameters
+        ----------
+        id : Any
+            The parameter ID to validate.
+
+        Raises
+        ------
+        ValueError
+            If the ID is not a non-empty string or is a reserved name.
+
+        Examples
+        --------
+        >>> Parameter.validate_id('x')
+        >>> Parameter.validate_id('_runtime')
+        ValueError: Invalid parameter ID: '_runtime' is a reserved name. Choose a different name.
+        """
+        if not isinstance(id, str) or id == '':
+            raise ValueError(f"Invalid parameter ID: '{id}' must be a non-empty string")
+        if id in Parameter.RESERVED_IDS:
+            raise ValueError(f"Invalid parameter ID: '{id}' is a reserved name. Choose a different name.")
     
     @staticmethod
-    def is_valid_id_iterable(id_iterable):
-        return isinstance(id_iterable, (list, tuple)) and all([Parameter.is_valid_id(id) for id in id_iterable])
+    def validate_id_iterable(ids: Any) -> None:
+        """
+        Validate an iterable of parameter IDs.
 
+        Parameters
+        ----------
+        ids : Any
+            An iterable of parameter IDs to validate.
+
+        Raises
+        ------
+        ValueError
+            If ids is not an iterable of non-empty strings or contains reserved names.
+        """
+        if not hasattr(ids, '__iter__') or isinstance(ids, str):
+            raise ValueError(f"Invalid parameter IDs: '{ids}' must be an iterable of strings, not a string")
+        for id in ids:
+            Parameter.validate_id(id)
             
-class ParameterSet(dict):
+class ParameterSet(dict[str, Parameter]):
     def __init__(self):
 
         self.add_param(Parameter('runtime', 0))
@@ -76,6 +117,10 @@ class ParameterSet(dict):
             logging.info(f"Parameter '{id}' overwritten")
 
         self[id] = parameter
+
+    def get_value(self, param_id, default=None):
+        parameter = self.get(param_id)
+        return parameter.value if parameter else default
 
     @property
     def values_dict(self):
