@@ -60,6 +60,8 @@ pip install functioneer
 ```
 
 ## Getting Started
+For a full set of examples check out [Examples.ipynb](Examples.ipynb)
+
 Below are a few quick examples of how to use Functioneer. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
 
 ### Choose a Function to Analyze
