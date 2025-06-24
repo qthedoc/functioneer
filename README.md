@@ -89,7 +89,7 @@ anal.add.define('b', 100) # Define parameter 'b'
 anal.add.define('x', 1) # Define parameter 'x'
 anal.add.define('y', 1) # Define parameter 'y'
 
-anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function with parameter ids matched to kwargs
+anal.add.execute(func=rosenbrock) # Execute function with parameter ids matched to kwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -99,11 +99,11 @@ print(results['df'])
 
 ```
 Output:
-   runtime  a    b  x  y  rosen                   datetime
-0      0.0  1  100  1  1      0 2025-01-03 17:06:21.252981
+   runtime  a    b  x  y  rosenbrock                   datetime
+0      0.0  1  100  1  1           0 2025-06-24 03:26:48.842824
 ```
 
-As we expect, the `rosen` parameter evaluates to 0 when a=1, b=100, x=1, y=1
+As we expect, the `rosenbrock` parameter evaluates to 0 when a=1, b=100, x=1, y=1
 
 Note: the `results['df']` is a pandas DataFrame containing all parameters in addition to *runtime* and *datetime* for the given branch
 
@@ -113,6 +113,7 @@ If you want to test a set of values for a parameter you can create a *fork* in t
 
 Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock on a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
 
+Note: the parameter's name is by default set from the function name, but can be overridden using the 'assign_to' arg.
 Note: some boiler plate can be removed by defining initial parameters in the AnalysisModule() declaration
 Note: initial parameter values will be overwritten as needed by parameter steps
 ```
@@ -121,10 +122,10 @@ init_params = dict(a=1, b=100, x=1, y=1) # define initial parameters
 anal = fn.AnalysisModule(init_params)
 
 # Define analysis sequence
-anal.add.fork('x', value_sets=(0, 1, 2)) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
-anal.add.fork('y', value_sets=(1, 10)) # Fork analysis, create a branch for each value of 'y': 1, 10
+anal.add.fork('x', value_set=(0, 1, 2)) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
+anal.add.fork('y', value_set=(1, 10)) # Fork analysis, create a branch for each value of 'y': 1, 10
 
-anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function (for each branch) with parameters matched to kwargs
+anal.add.execute(func=rosenbrock, assign_to='brock_purdy') # Execute function (for each branch) with parameters matched to kwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -132,13 +133,13 @@ print(results['df'].drop(columns='datetime'))
 ```
 ```
 Output:
-    runtime  a    b  x   y  rosen
-0  0.000994  1  100  0   1    101
-1  0.000994  1  100  0  10  10001
-2  0.000994  1  100  1   1      0
-3  0.000994  1  100  1  10   8100
-4  0.000994  1  100  2   1    901
-5  0.000994  1  100  2  10   3601
+    runtime  a    b  x   y  brock_purdy
+0  0.001294  1  100  0   1          101
+1  0.000000  1  100  0  10        10001
+2  0.000000  1  100  1   1            0
+3  0.000000  1  100  1  10         8100
+4  0.000000  1  100  2   1          901
+5  0.000000  1  100  2  10         3601
 ```
 The parameters `x` and `y` were given 3 and 2 fork values respectively, this created 6 total *leaves* (end of each branch) in the analysis. `rosen` has been evaluated for each *leaf*. Essentially you have begun to map the Rosenbrock function over the x-y domain.
 
@@ -152,7 +153,7 @@ anal = fn.AnalysisModule(dict(x=0, y=0))
 anal.add.fork('a', value_set=(1, 2)) # Fork analysis, create a branch for each value of 'a': 0, 1, 2
 anal.add.fork('b', value_set=(0, 100, 200)) # Fork analysis, create a branch for each value of 'b': 0, 100, 200
 
-anal.add.optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y'))
+anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
 
 # Run the analysis sequence
 results = anal.run()
@@ -181,8 +182,7 @@ anal = fn.AnalysisModule(dict(a=1, b=100))
 
 # Define analysis sequence
 anal.add.fork.multi(('x', 'y'), value_sets=((0, 1, 2), (0, 10, 20))) # Fork analysis, create a branch for each value of 'y': 1, 10
-
-anal.add.execute(func=rosenbrock, output_param_ids='rosen') # Execute function (for each branch) with parameters matched to kwargs
+anal.add.execute(func=rosenbrock) # Execute function (for each branch) with parameters matched to kwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -208,7 +208,7 @@ anal = fn.AnalysisModule(dict(x=0, y=0))
 # Define analysis sequence
 anal.add.fork('a', value_set=(1, 2))
 anal.add.fork('b', value_set=(0, 100, 200))
-anal.add.optimize(func=rosenbrock, obj_param_id='rosen', opt_param_ids=('x', 'y'))
+anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
 
 # Only evaluate 'expensive_func' if the optimized 'y' is above 0.5
 expensive_func = lambda x, y: x+y
@@ -219,13 +219,13 @@ print(results['df'].drop(columns='datetime'))
 ```
 ```
 Output:
-    runtime  a    b         x         y         rosen  expensive_param  
-0  0.004001  1    0  1.000000  0.000000  4.930381e-32              NaN  
-1  0.009702  1  100  0.999763  0.999523  5.772481e-08         1.999286  
-2  0.017009  1  200  0.999939  0.999873  8.146869e-09         1.999811  
-3  0.000995  2    0  2.000000  0.000000  0.000000e+00              NaN  
-4  0.016001  2  100  1.999731  3.998866  4.067518e-07         5.998596  
-5  0.020995  2  200  1.999554  3.998225  2.136755e-07         5.997779  
+    runtime         x         y  a    b    rosenbrock  expensive_param
+0  0.001997  1.000000  0.000000  1    0  4.930381e-32              NaN
+1  0.004206  0.999763  0.999523  1  100  5.772481e-08         1.999286
+2  0.012199  0.999939  0.999873  1  200  8.146869e-09         1.999811
+3  0.000965  2.000000  0.000000  2    0  0.000000e+00              NaN
+4  0.010121  1.999731  3.998866  2  100  4.067518e-07         5.998596
+5  0.012308  1.999554  3.998225  2  200  2.136755e-07         5.997779 
 ```
 Notice how the evaluation of `expensive_param` has been skipped where the optimized `y` did not meet our criteria `y>0.5`
 

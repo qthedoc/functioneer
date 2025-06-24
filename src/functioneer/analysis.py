@@ -250,7 +250,7 @@ class AnalysisModule():
         finally:
             self.runtime = time.time() - self.t0
 
-        print('done with analysis!')
+        # print('done with analysis!')
 
         # Create DataFrame from collected leaf data
         df = pd.DataFrame(self.leaf_data) if self.leaf_data else pd.DataFrame()

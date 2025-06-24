@@ -560,7 +560,7 @@ class Optimize(AnalysisStep):
             if isinstance(self.optimizer, str):
                 if self.optimizer in minimize_methods:
                     results = minimize(objective_wrapper, x0, method=self.optimizer,
-                                       bounds=bounds_list, options=self.options, **self.kwargs)
+                                       bounds=bounds_list, tol=self.tol, options=self.options, **self.kwargs)
                 elif self.optimizer in global_methods:
                     if bounds_list is None or any(b[0] is None or b[1] is None or
                                                   not (np.isfinite(b[0]) and np.isfinite(b[1]))
@@ -570,7 +570,7 @@ class Optimize(AnalysisStep):
                         results = dual_annealing(objective_wrapper, bounds_list,
                                                  **{**self.options, **self.kwargs})
                     else:  # basinhopping
-                        results = basinhopping(objective_wrapper, x0,
+                        results = basinhopping(objective_wrapper, x0, 
                                                **{**self.options, **self.kwargs})
                 else:
                     raise ValueError(f"Unsupported optimizer string: {self.optimizer}")
