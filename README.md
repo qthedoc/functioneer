@@ -85,10 +85,10 @@ import functioneer as fn
 anal = fn.AnalysisModule() # its not ānal is anál!
 
 # Define analysis sequence
-anal.add.define('a', 1) # Define parameter 'a'
-anal.add.define('b', 100) # Define parameter 'b'
-anal.add.define('x', 1) # Define parameter 'x'
-anal.add.define('y', 1) # Define parameter 'y'
+anal.add.define('a', 1.0) # Define parameter 'a' and set value to 1.0
+anal.add.define('b', 100)
+anal.add.define('x', 1)
+anal.add.define('y', 1)
 
 anal.add.execute(func=rosenbrock) # Execute function with parameter ids matched to kwargs
 
@@ -124,9 +124,9 @@ anal = fn.AnalysisModule(init_params)
 
 # Define analysis sequence
 anal.add.fork('x', value_set=(0, 1, 2)) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
-anal.add.fork('y', value_set=(1, 10)) # Fork analysis, create a branch for each value of 'y': 1, 10
+anal.add.fork('y', value_set=(1, 10))
 
-anal.add.execute(func=rosenbrock, assign_to='brock_purdy') # Execute function (for each branch) with parameters matched to kwargs
+anal.add.execute(func=rosenbrock, assign_to='brock_purdy') # set custom param name with assign_tokwargs
 
 # Run the analysis sequence
 results = anal.run()
@@ -151,10 +151,10 @@ Let's say you want to find the local minimum of the Rosenbrock (optimize `x` and
 anal = fn.AnalysisModule(dict(x=0, y=0))
 
 # Define analysis sequence
-anal.add.fork('a', value_set=(1, 2)) # Fork analysis, create a branch for each value of 'a': 0, 1, 2
-anal.add.fork('b', value_set=(0, 100, 200)) # Fork analysis, create a branch for each value of 'b': 0, 100, 200
+anal.add.fork('a', value_set=(1, 2))
+anal.add.fork('b', value_set=(0, 100, 200))
 
-anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
+anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y')) # Optimize 'x' and 'y' to minimize rosenbrock
 
 # Run the analysis sequence
 results = anal.run()
@@ -182,8 +182,8 @@ If you want to test specific combinations of parameters (instead of creating a g
 anal = fn.AnalysisModule(dict(a=1, b=100))
 
 # Define analysis sequence
-anal.add.fork.multi(('x', 'y'), value_sets=((0, 1, 2), (0, 10, 20))) # Fork analysis, create a branch for each value of 'y': 1, 10
-anal.add.execute(func=rosenbrock) # Execute function (for each branch) with parameters matched to kwargs
+anal.add.fork.multi(('x', 'y'), value_sets=((0, 1, 2), (0, 10, 20)))
+anal.add.execute(func=rosenbrock)
 
 # Run the analysis sequence
 results = anal.run()
