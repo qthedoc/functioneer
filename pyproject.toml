@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "functioneer"
-version = "0.2.2"
+version = "0.3.0"
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 description = "Effortlessly explore function behavior with automated batch analysis."
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 classifiers = [
-  "Development Status :: 3 - Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Science/Research",
   "Topic :: Scientific/Engineering",
   "License :: OSI Approved :: MIT License",

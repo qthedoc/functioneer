@@ -1,4 +1,10 @@
 # Changelog
+## [0.3.0](https://github.com/qthedoc/functioneer/compare/v0.2.2...v0.3.0) (2025-06-24)
+
+### Updated
+
+* Fleshed out optimizer
+* Added lots of validation
 
 ## [0.2.2](https://github.com/qthedoc/functioneer/compare/v0.2.1...v0.2.2) (2025-02-04)
 
