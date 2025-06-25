@@ -279,57 +279,58 @@ class AnalysisModule():
         step_idx : int
             The index of the current step in the sequence.
 
+        Returns
+        -------
+        None
+            This method does not return a value; it updates the internal results by calling _end_sequence
+            or recursively processing subsequent steps.
+
         Raises
         ------
-        RuntimeError
+        ValueError
+            If the step index is invalid, a step returns an invalid output, or a condition/step fails
+            due to invalid inputs (e.g., missing parameters, type mismatches).
+        AnalysisError
             If an error occurs during condition evaluation or step execution, including step type,
             index, details, and the original exception.
-        ValueError
-            If a step returns an invalid output (neither None nor a tuple of ParameterSet instances).
-
-        Notes
-        -----
-        - If a step's condition evaluates to False, the current parameter set is passed through unchanged.
-        - A step returning None indicates the branch should terminate, equivalent to reaching the end
-          of the sequence.
-        - Runtime is measured for each step and added to the 'runtime' parameter in each resulting
-          parameter set.
         """
 
-        # Terminate branch if no more steps
-        if step_idx >= len(self.sequence):
-            self._end_sequence(paramset)
-            return
-
-        # Get current step
-        step: AnalysisStep = self.sequence[step_idx]
-
-        # Check step condition
         try:
-            run_step = paramset.call_with_matched_kwargs(step.condition) if step.condition else True
-        except Exception as e:
-            raise self._wrap_step_error(step, step_idx, e, "evaluating condition") from e
+            # Terminate branch if no more steps
+            if step_idx >= len(self.sequence):
+                self._end_sequence(paramset)
+                return
 
-        # Run the analysis step
-        t0 = time.time()
-        try:
-            new_paramsets = step.run(paramset) if run_step else (copy.deepcopy(paramset),)
-        except Exception as e:
-            raise self._wrap_step_error(step, step_idx, e, "executing step")
-        step_runtime = time.time() - t0
-    
-        # Handle branch termination
-        if new_paramsets is None:
-            self._end_sequence(paramset)
-            return
+            # Get current step
+            step: AnalysisStep = self.sequence[step_idx]
 
-        # Validate new paramsets
-        if not isinstance(new_paramsets, tuple) or not all(isinstance(ps, ParameterSet) for ps in new_paramsets):
-            raise self._wrap_step_error(step, step_idx, None, f"invalid step result, Expected tuple of ParameterSet, got {type(new_paramsets)}")
-            # raise ValueError(
-            #     f"{type(step).__name__} step at index {step_idx} returned invalid output: "
-                
-            # )
+            # Check step condition
+            try:
+                run_step = paramset.call_with_matched_kwargs(step.condition) if step.condition else True
+            except Exception as e:
+                raise RuntimeError(f"Error evaluating step condition: {str(e)}") from e
+
+            # Run the analysis step
+            t0 = time.time()
+            try:
+                new_paramsets = step.run(paramset) if run_step else (copy.deepcopy(paramset),)
+            except Exception as e:
+                raise RuntimeError(f"Error executing step: {str(e)}") from e
+            step_runtime = time.time() - t0
+        
+            # Handle branch termination
+            if new_paramsets is None:
+                self._end_sequence(paramset)
+                return
+
+            # Validate new paramsets
+            if not isinstance(new_paramsets, tuple) or not all(isinstance(ps, ParameterSet) for ps in new_paramsets):
+                raise ValueError(f"Invalid step result, Expected tuple of ParameterSet, got {type(new_paramsets)}")
+        
+        except Exception as e:
+            step_type = type(step).__name__
+            details = step.get_details()
+            raise RuntimeError(f"Error in {step_type} step at index {step_idx} with details {details}: {str(e)}") from e
 
         # Process next step for each new parameter set (recursively)
         for ps in new_paramsets:
@@ -345,28 +346,3 @@ class AnalysisModule():
         leaf_dict['datetime'] = datetime.now()
         self.leaf_data.append(leaf_dict)
 
-    def _wrap_step_error(self, step: AnalysisStep, step_idx: int, error: Optional[Exception] = None, context: Optional[str] = None) -> RuntimeError:
-        """
-        Wrap an exception with context about the analysis step.
-
-        Parameters
-        ----------
-        step : AnalysisStep
-            The analysis step where the error occurred.
-        step_idx : int
-            The index of the step in the sequence.
-        error : Exception
-            The original exception.
-        context : str
-            Additional context (e.g., 'evaluating condition').
-
-        Returns
-        -------
-        RuntimeError
-            A new RuntimeError with step context and chained original exception.
-        """
-        step_type = type(step).__name__
-        details = step.get_details()
-        return RuntimeError(
-            f"Error in {step_type} step at index {step_idx} ({context}): {error} | Details: {details}"
-        )
