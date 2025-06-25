@@ -10,7 +10,7 @@ maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 description = "Effortlessly explore function behavior with automated batch analysis."
 readme = "README.md"
 license = { text = "MIT" }
-keywords = ["functioneer", "analysis", "batch run", "automation", "autorun", "trade space", "digital twin"]
+keywords = ["functioneer", "analysis", "batch run", "batch runner", "automation", "autorun", "trade space", "digital twin"]
 requires-python = ">=3.7"
 dependencies = [
   "numpy>=1.18.5",

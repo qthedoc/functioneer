@@ -175,7 +175,7 @@ class ParameterSet(dict[str, Parameter]):
         if missing_args:
             missing_args = [f"'{arg}'" for arg in missing_args]
             # TODO: catch this error higher up so we can provide info about WHAT param or function was being evaluated
-            raise ValueError(f"Missing the following required params while evaluating function: {', '.join(missing_args)}")
+            raise KeyError(f"Missing the following required params while evaluating function: {', '.join(missing_args)}")
 
         # Call the function with matched kwargs
         return func(**matched_kwargs)
