@@ -350,10 +350,10 @@ class Optimize(AnalysisStep):
     ----------
     func : callable
         The objective function to optimize. Must return a scalar value.
+    opt_param_ids : iterable of str, optional
+        Parameter IDs to optimize.    
     assign_to : str, optional
         Parameter ID where the optimized objective value is stored. Defaults to func.__name__ if not a lambda.
-    opt_param_ids : iterable of str, optional
-        Parameter IDs to optimize.
     direction : {'min', 'max'}, optional
         Direction of optimization. Default is 'min' (minimization).
     optimizer : str or callable, optional
@@ -400,8 +400,8 @@ class Optimize(AnalysisStep):
     """
     def __init__(self,
         func: Callable,
+        opt_param_ids: Tuple[str, ...],
         assign_to: Optional[str] = None,
-        opt_param_ids: Optional[Tuple[str, ...]] = None,
         direction: str = 'min',
         optimizer: Union[str, Callable] = 'SLSQP',
         tol: Optional[float] = None,

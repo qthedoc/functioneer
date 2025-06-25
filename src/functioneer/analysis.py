@@ -119,14 +119,21 @@ class AnalysisModule():
                 value: Value for the parameter (if param_or_dict is a string).
                 condition: Optional condition function to determine if the step should run.
 
+            Examples:
+                >>> anal.add.define('a', 1)  # Define single parameter
+                >>> anal.add.define({'a': 1, 'b': 100})  # Define multiple parameters
+
             Raises:
-                ValueError: If inputs are invalid (e.g., wrong types or missing value).
+                ValueError: If inputs are invalid (e.g., wrong types, missing value, or value provided with dict).
             """
             if isinstance(param_or_dict, dict):
+                if value is not None:
+                    raise ValueError(
+                        "When defining multiple parameters with a dictionary, the 'value' argument is ignored. "
+                        "Use either define(param_id: str, value: Any) or define(params: Dict[str, Any])."
+                    )
                 for param_id, val in param_or_dict.items():
                     self.parent.sequence.append(Define(param_id, val, condition))
-                if value:
-                    raise Warning(f"'value' arg is ignored when dict is provided. Expected (param_id, value) or {param_id: value, ...}")
             elif isinstance(param_or_dict, str) and value is not None:
                 self.parent.sequence.append(Define(param_or_dict, value, condition))
             else:
@@ -140,10 +147,19 @@ class AnalysisModule():
                 value_set: Tuple of values for the parameter (if param_or_dict is a string).
                 condition: Optional condition function to determine if the step should run.
 
+            Examples:
+                >>> anal.add.fork('x', (0, 1, 2))  # Fork single parameter
+                >>> anal.add.fork({'x': (0, 1, 2), 'y': (0, 10, 20)})  # Fork multiple parameters
+
             Raises:
-                ValueError: If inputs are invalid (e.g., wrong types or missing value_set).
+                ValueError: If inputs are invalid (e.g., wrong types, missing value_set, or value_set provided with dict).
             """
             if isinstance(param_or_dict, dict):
+                if value_set is not None:
+                    raise ValueError(
+                        "When forking multiple parameters with a dictionary, the 'value_set' argument is ignored. "
+                        "Use either fork(param_id: str, value_set: Tuple[Any, ...]) or fork(params: Dict[str, Tuple[Any, ...]])."
+                    )
                 self.parent.sequence.append(Fork(param_or_dict, condition))
             elif isinstance(param_or_dict, str) and value_set is not None:
                 self.parent.sequence.append(Fork({param_or_dict: value_set}, condition))
@@ -155,22 +171,28 @@ class AnalysisModule():
 
             Args:
                 func: Function to execute, taking parameter values as input.
-                assign_to: Parameter ID(s) to store the result (str or list/tuple of strings).
+                assign_to: Custom Parameter ID(s) to store the result (str or list/tuple of strings).
                 unpack_result: If True, unpacks a dictionary result into multiple parameters.
                 condition: Optional condition function to determine if the step should run.
+
+            Examples:
+                >>> anal.add.execute(my_function)  # Execute function, store result
+                >>> anal.add.execute(my_function, assign_to='new_param')  # Execute function, store result to param: 'new_param'
+                >>> anal.add.execute(my_function_returns_dict, unpack_result=True)  # Unpack dict result
+                >>> anal.add.execute(my_function_returns_dict, assign_to=['out_1', 'out_2'], unpack_result=True)  # Unpack only dict keys: out_1, out_2
 
             Raises:
                 ValueError: If func is not callable or assign_to is invalid.
             """
             self.parent.sequence.append(Execute(func, assign_to, unpack_result, condition))
                 
-        def optimize(self, func: Callable[..., float], assign_to: Optional[str] = None, opt_param_ids: Optional[Tuple[str, ...]] = None, direction: str = 'min', optimizer: Union[str, Callable] = 'SLSQP', tol: Optional[float] = None, bounds: Optional[Dict[str, Tuple[float, float]]] = None, options: Optional[Dict[str, Any]] = None, condition: Optional[Callable[..., bool]] = None, **kwargs) -> None:
+        def optimize(self, func: Callable[..., float], opt_param_ids: Tuple[str, ...], assign_to: Optional[str] = None, direction: str = 'min', optimizer: Union[str, Callable] = 'SLSQP', tol: Optional[float] = None, bounds: Optional[Dict[str, Tuple[float, float]]] = None, options: Optional[Dict[str, Any]] = None, condition: Optional[Callable[..., bool]] = None, **kwargs) -> None:
             """Optimize a function over specified parameters.
 
             Args:
                 func: Objective function to optimize, returning a scalar.
-                assign_to: Parameter ID to store the optimized value.
                 opt_param_ids: Parameter IDs to optimize.
+                assign_to: Parameter ID to store the optimized value.
                 direction: Optimization direction ('min' or 'max').
                 optimizer: Optimization method (SciPy method name or callable).
                 tol: Tolerance for convergence.
@@ -179,10 +201,14 @@ class AnalysisModule():
                 condition: Optional condition function to determine if the step should run.
                 **kwargs: Additional arguments for the optimizer.
 
+            Examples:
+                >>> anal.add.optimize(rosenbrock, ('x', 'y'))  # Minimize with SLSQP
+                >>> anal.add.optimize(rosenbrock_neg, ('x', 'y'), direction='max', optimizer='Nelder-Mead')  # Maximize with Nelder-Mead
+
             Raises:
                 ValueError: If inputs are invalid (e.g., invalid direction, optimizer).
             """
-            self.parent.sequence.append(Optimize(func, assign_to, opt_param_ids, direction, optimizer, tol, bounds, options, condition, **kwargs))
+            self.parent.sequence.append(Optimize(func, opt_param_ids, assign_to, direction, optimizer, tol, bounds, options, condition, **kwargs))
 
     def run(self,
             # create_pandas = True,
