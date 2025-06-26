@@ -4,7 +4,7 @@
 **GitHub**: https://github.com/qthedoc/functioneer/
 **PyPI**: https://pypi.org/project/functioneer/
 
-Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, with various parameter combinations and/or optimizations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
+With Functioneer on your side, prepare to become an analysis wizard. Effortlessly explore your functions with the ultimate batch runner. In just a few lines of code, you can set up tests for thousands or even millions of parameter combinations and optimizations. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
 
 ## Quick Start
 
