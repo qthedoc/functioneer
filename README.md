@@ -10,7 +10,7 @@ Functioneer is the ultimate batch runner. Prepare to be an analysis ninja, effor
 
 ## Quick Start
 
-**Full set of examples**: [Examples.ipynb (GitHub)](https://github.com/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
+**Full set of examples**: [Examples.ipynb (nbviewer.org)](https://nbviewer.org/github/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
 *This is currently the main form of documentation.
 
 ### Installation
@@ -82,9 +82,9 @@ Example 2 Output:
 ```
 ## Key Features
 
-- **Test variations of a parameter with a single line of code:** Avoid writing deeply nested loops. Typically varying *n* parameters requires *n* nested loops... not anymore!
+- **Quickly test variations of a parameter with a single line of code:** Avoid writing deeply nested loops. Typically varying *n* parameters requires *n* nested loops... not anymore!
 
-- **Quickly swap out optimization variables:** Most optimization libraries require your function to take in a list or array of values, BUT this makes it very annoying to remap your parameters to and from the array each time you simple want to change an optimization parameter!
+- **Quickly setup optimization:** Most optimization libraries require your function to take in and spit out a list or array, BUT this makes it very annoying to remap your parameters to and from the array each time you simple want to add/rm/swap an optimization parameter!
 
 - **Get results in a consistent easy to use format:** No more questions, the results are presented in a nice clean pandas data frame every time.
 
