@@ -7,7 +7,7 @@ name = "functioneer"
 version = "0.4.0"
 authors = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
 maintainers = [{ name = "Quinn Marsh", email = "quinnmarsh@hotmail.com" }]
-description = "Effortlessly explore function behavior with automated batch analysis."
+description = "Effortlessly explore function behavior with the ultimate batch runner."
 readme = "README.md"
 license = { text = "MIT" }
 keywords = ["functioneer", "analysis", "batch run", "batch runner", "automation", "autorun", "trade space", "digital twin"]
