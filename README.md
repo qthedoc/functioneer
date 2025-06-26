@@ -13,7 +13,7 @@ pip install functioneer
 ```
 
 Full set of examples: [Examples.ipynb](https://github.com/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
-*This currently the main form of documentation, lots of good stuff in there!
+*This is currently the main form of documentation, lots of good stuff in there!
 
 ### Choose a Function to Analyze
 Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its historical significance as an optimization benchmark.
