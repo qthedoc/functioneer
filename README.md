@@ -5,6 +5,86 @@
 
 Functioneer lets you effortlessly explore function behavior with automated batch analysis. With just a few lines of code, you can queue up thousands or even millions of function evaluations, with various parameter combinations and/or optimizations. Retrieve structured results in formats like pandas for seamless integration into your workflows. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
 
+## Quick Start
+
+### Installation
+```
+pip install functioneer
+```
+
+Full set of examples: [Examples.ipynb](https://github.com/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
+*This currently the main form of documentation, lots of good stuff in there!
+
+### Choose a Function to Analyze
+Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its historical significance as an optimization benchmark.
+
+```
+import functioneer as fn
+
+# Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
+def rosenbrock(x, y, a, b):
+    return (a-x)**2 + b*(y-x**2)**2
+```
+
+### Example 1: Forks and Function Evaluation (The Basics)
+
+**Goal**: Test `rosenbrock` function with multiple values for parameters `x` and `y`.
+
+Note: forks for `x` and `y` create a 'grid' of values
+Note: Parameter IDs MUST match your function's args, function evals inside functioneer are fully keyword arg based.
+```
+anal = fn.AnalysisModule() # Create new analysis
+anal.add.define({'a': 1, 'b': 100}) # define a and b
+anal.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
+anal.add.fork('y', (1, 10))
+anal.add.execute(func=rosenbrock) #
+results = anal.run()
+print('Example 1 Output:')
+print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
+```
+```
+Example 1 Output:
+   a    b  x   y  rosenbrock
+0  1  100  0   1         101
+1  1  100  0  10       10001
+2  1  100  1   1           0
+3  1  100  1  10        8100
+4  1  100  2   1         901
+5  1  100  2  10        3601
+```
+
+### Example 2: Optimization
+
+**Goal**: Optimize `x` and `y` to find the minimum `rosenbrock` value for various `a` and `b` values.
+
+Note: values for `x` and `y` before optimization are used as initial guesses
+```
+anal = fn.AnalysisModule({'x': 0, 'y': 0})
+anal.add.fork('a', (1, 2))
+anal.add.fork('b', (0, 100, 200))
+anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
+results = anal.run()
+print('\nExample 2 Output:')
+print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
+```
+```
+Example 2 Output:
+   a    b         x         y    rosenbrock
+0  1    0  1.000000  0.000000  4.930381e-32
+1  1  100  0.999763  0.999523  5.772481e-08
+2  1  200  0.999939  0.999873  8.146869e-09
+3  2    0  2.000000  0.000000  0.000000e+00
+4  2  100  1.999731  3.998866  4.067518e-07
+5  2  200  1.999554  3.998225  2.136755e-07
+```
+## Key Features
+
+- **Test variations of a parameter with a single line of code:** Avoid writing deeply nested loops. Typically varying *n* parameters requires *n* nested loops
+
+- **Quickly swap out optimization variables:** Most optimization libraries require your function to take in a list or array of values, BUT this makes it very annoying to remap your parameters to and from the array each time you simple want to change an optimization parameter!
+
+- **Get results in a consistent easy to use format:** No more questions, the results are presented in a pandas data frame every time.
+
 ## Use cases
 
 - **Analysis and Optimization of Digital Twins**: Explore the design trade-space and understand performance of your simulated system.
@@ -13,7 +93,7 @@ Functioneer lets you effortlessly explore function behavior with automated batch
 
 ## How Functioneer Works
 
-At its core, functioneer organizes analyses as tree where a *set of parameters* starts at the trunk and moves out towards the leaves. Along the way, the *set of parameters* 'flows' through a series of *analysis steps* (each of which can be defined in a single line of code). Each *analysis step* can modify or use the parameters in various ways, such as defining new parameters, modifying parameters, or using the parameters to evaluate or even optimize any function of your choice. One key feature of functioneer is the ability to introduce *forks*: a type of analysis step that splits the analysis into multiple parallel *branches*, each exploring different values for a specific parameter. Using many *Forks* in series allows you to queue up thousands or even millions of parameter combinations with only a few lines of code. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
+At its core, functioneer organizes analyses as a tree where a *set of parameters* starts at the trunk and moves out towards the *leaves*. Along the way, the *set of parameters* 'flows' through a series of *analysis steps* (each of which can be defined in a single line of code). Each *analysis step* can modify or use the parameters in various ways, such as defining new parameters, modifying/overwriting parameters, or using the parameters to evaluate or even optimize any function of your choice. One key feature of functioneer is the ability to introduce *forks*: a type of *analysis step* that splits the analysis into multiple parallel *branches*, each exploring different values for a given parameter. Using many *Forks* in series allows you to queue up thousands or even millions of parameter combinations with only a few lines of code. This structured approach enables highly flexible and dynamic analyses, suitable for a wide range of applications.
 
 Summary of most useful types of *analysis steps*:
 - Define: Adds a new parameter to the analysis
@@ -51,184 +131,16 @@ Summary of most useful types of *analysis steps*:
     * Function: Represents the final state of parameters for that branch. Each leaf corresponds to a specific combination of parameter values and results. When results are tabulated, each row corresponds to a leaf.
 </details>
 
-## Installation
+## Inspiration
+I wanted to be an Analysis Ninja... effortlessly swapping parameters and optimization variables and most importantly getting results quickly! But manually rearranging code for what seemed like simple asks (like adding a variable to the analysis, or swapping out an optimization variable) was really baking my noodle. Thus Functioneer was born!
 
-Install Functioneer directly from PyPI:
+## Acknowledgments
+Thanks to the amazing open source communities: Python, numpy, pandas, etc that make this possible.
 
-```
-pip install functioneer
-```
+Thanks to LightManufacturing, where I had the opportunity to develop advanced digital twins for solar thermal facilities... and then analyze them. It was here, where the seed for functioneer was planted. 
 
-## Getting Started
-For a full set of examples check out [Examples.ipynb](Examples.ipynb)
+Thanks to God for incepting my mind with what seemed like the craziest idea at the time: to structure an analysis as a pipeline of *analysis steps* with the *parameters* flowing thru like water.
 
-Below are a few quick examples of how to use Functioneer. Each example will build on the last, introducing one piece of functionality. By the end you will have witnessed the computational power of this fully armed and fully operational library.
-
-### Choose a Function to Analyze
-Functioneer is designed to analyze ANY function(s) with ANY number of inputs and outputs. For the following examples, we use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) for (1) its relative simplicity, (2) 4 inputs (plenty to play with) and (3) its historical significance as an optimization benchmark.
-
-```
-# Example Function
-# Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
-def rosenbrock(x, y, a, b):
-    return (a-x)**2 + b*(y-x**2)**2
-```
-
-### Example 1: The Basics (Defining Parameters and Executing a Function)
-Set up an *analysis sequence* by defining four parameters to match our function, then executing the function 
-Note: Parameter IDs MUST match your function's args, function executions inside functioneer are fully keyword arg based.
-
-```
-import functioneer as fn
-
-# Create new analysis
-anal = fn.AnalysisModule() # its not ānal is anál!
-
-# Define analysis sequence
-anal.add.define('a', 1.0) # Define parameter 'a' and set value to 1.0
-anal.add.define('b', 100)
-anal.add.define('x', 1)
-anal.add.define('y', 1)
-
-anal.add.execute(func=rosenbrock) # Execute function with parameter ids matched to kwargs
-
-# Run the analysis sequence
-results = anal.run()
-
-print(results['df'])
-```
-
-```
-Output:
-   runtime  a    b  x  y  rosenbrock                   datetime
-0      0.0  1  100  1  1           0 2025-06-24 03:26:48.842824
-```
-
-As we expect, the `rosenbrock` parameter evaluates to 0 when a=1, b=100, x=1, y=1
-
-Note: the `results['df']` is a pandas DataFrame containing all parameters in addition to *runtime* and *datetime* for the given branch
-
-### Example 2: Single Parameter Forks (Testing Variations of a Parameter)
-Let's say you want to test a range of values for some parameters...
-If you want to test a set of values for a parameter you can create a *fork* in the *analysis sequence*. This splits the analysis into multiple *branches*, each exploring different values for a the given parameter.
-
-Say we want to evaluate and plot the Rosenbrock surface over the x-y domain. Let's evaluate Rosenbrock on a grid where x=(0, 1, 2) and y=(1, 10) which should result in 6 final *branches* / *leaves*...
-
-Note: the parameter's name is by default set from the function name, but can be overridden using the 'assign_to' arg.
-Note: some boiler plate can be removed by defining initial parameters in the AnalysisModule() declaration
-Note: initial parameter values will be overwritten as needed by parameter steps
-```
-# Create new analysis
-init_params = dict(a=1, b=100, x=1, y=1) # define initial parameters
-anal = fn.AnalysisModule(init_params)
-
-# Define analysis sequence
-anal.add.fork('x', value_set=(0, 1, 2)) # Fork analysis, create a branch for each value of 'x': 0, 1, 2
-anal.add.fork('y', value_set=(1, 10))
-
-anal.add.execute(func=rosenbrock, assign_to='brock_purdy') # set custom param name with assign_tokwargs
-
-# Run the analysis sequence
-results = anal.run()
-print(results['df'].drop(columns='datetime'))
-```
-```
-Output:
-    runtime  a    b  x   y  brock_purdy
-0  0.001294  1  100  0   1          101
-1  0.000000  1  100  0  10        10001
-2  0.000000  1  100  1   1            0
-3  0.000000  1  100  1  10         8100
-4  0.000000  1  100  2   1          901
-5  0.000000  1  100  2  10         3601
-```
-The parameters `x` and `y` were given 3 and 2 fork values respectively, this created 6 total *leaves* (end of each branch) in the analysis. `rosen` has been evaluated for each *leaf*. Essentially you have begun to map the Rosenbrock function over the x-y domain.
-
-### Example 3: Optimization
-Let's say you want to find the local minimum of the Rosenbrock (optimize `x` and `y`) for several variations of `a` and `b` (different flavors Rosenbrock functions). You would fork the analysis at parameters `a` and `b`, then perform an optimization on each branch.
-```
-# Create new analysis
-anal = fn.AnalysisModule(dict(x=0, y=0))
-
-# Define analysis sequence
-anal.add.fork('a', value_set=(1, 2))
-anal.add.fork('b', value_set=(0, 100, 200))
-
-anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y')) # Optimize 'x' and 'y' to minimize rosenbrock
-
-# Run the analysis sequence
-results = anal.run()
-print(results['df'].drop(columns='datetime'))
-```
-```
-Output:
-    runtime         x         y  a    b    rosenbrock
-0  0.001518  1.000000  0.000000  1    0  4.930381e-32
-1  0.001006  0.999763  0.999523  1  100  5.772481e-08
-2  0.015998  0.999939  0.999873  1  200  8.146869e-09
-3  0.000000  2.000000  0.000000  2    0  0.000000e+00
-4  0.003642  1.999731  3.998866  2  100  4.067518e-07
-5  0.018693  1.999554  3.998225  2  200  2.136755e-07
-```
-For each branch, the Rosenbrock Function has been minimized and the solution values for `x`, `y` and `rosen` are shown.
-
-Note: the initial values (`x0`) used in the optimization are simply the existing parameter values (in this case x and y are 0) going into the optimization step.
-Note: due to optimization the runtimes for some of the analyses have gone up.
-
-### Example 4: Multi-parameter Forks
-If you want to test specific combinations of parameters (instead of creating a grid) use a *multi-parameter fork*.
-```
-# Create new analysis
-anal = fn.AnalysisModule(dict(a=1, b=100))
-
-# Define analysis sequence
-anal.add.fork.multi(('x', 'y'), value_sets=((0, 1, 2), (0, 10, 20)))
-anal.add.execute(func=rosenbrock)
-
-# Run the analysis sequence
-results = anal.run()
-print(results['df'].drop(columns='datetime'))
-```
-```
-Output:
-   runtime  a    b  x   y  rosenbrock
-0      0.0  1  100  0   0           1
-1      0.0  1  100  1  10        8100
-2      0.0  1  100  2  20       25601
-```
-Notice 3 branches have been create for each combination of `x` and `y`: `(x=0, y=0), (x=1, y=10), (x=2, y=20)`
-
-### Example 5: Analysis Steps can be Conditional
-Any *analysis step* can be given a conditional function that must return true at runtime or else the *analysis step* will be skipped. An example use case is when you want to skip an expensive *analysis step* if the parameters aren't looking "good".
-
-As an arbitrary example, assume that we only care about cases where the optimized value of `y` is above 0.5. Also assume `expensive_func` is costly to run and we want to avoid running it when `y<0.5`. 
-```
-# Create new analysis
-anal = fn.AnalysisModule(dict(x=0, y=0))
-
-# Define analysis sequence
-anal.add.fork('a', value_set=(1, 2))
-anal.add.fork('b', value_set=(0, 100, 200))
-anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
-
-# Only evaluate 'expensive_func' if the optimized 'y' is above 0.5
-expensive_func = lambda x, y: x+y
-anal.add.execute(func=expensive_func, condition=lambda y: y>0.5)
-
-results = anal.run()
-print(results['df'].drop(columns='datetime'))
-```
-```
-Output:
-    runtime         x         y  a    b    rosenbrock  expensive_param
-0  0.001997  1.000000  0.000000  1    0  4.930381e-32              NaN
-1  0.004206  0.999763  0.999523  1  100  5.772481e-08         1.999286
-2  0.012199  0.999939  0.999873  1  200  8.146869e-09         1.999811
-3  0.000965  2.000000  0.000000  2    0  0.000000e+00              NaN
-4  0.010121  1.999731  3.998866  2  100  4.067518e-07         5.998596
-5  0.012308  1.999554  3.998225  2  200  2.136755e-07         5.997779 
-```
-Notice how the evaluation of `expensive_param` has been skipped where the optimized `y` did not meet our criteria `y>0.5`
 
 ## License
 
