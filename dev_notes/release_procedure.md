@@ -2,6 +2,10 @@
 
 2025-06-25
 
+## Pre release
+- update docs (readme and examples)
+    - run examples.ipynb
+
 - Update version in pyproject.toml
 - Update version in __init__.py
 - Update CHANGELOG.md

@@ -1,5 +1,7 @@
 # Functioneer
 
+**Announcement:** Functioneer has just entered public testing and I'd love your feedback on anything: how you're using it, the API, the docs, requested features, etc. Please reach out, I'd love to hear from you. -Quinn
+
 **Author**: Quinn Marsh\
 **GitHub**: https://github.com/qthedoc/functioneer/ \
 **PyPI**: https://pypi.org/project/functioneer/ 
@@ -17,7 +19,7 @@ pip install functioneer
 ```
 
 ### Choose a Function to Analyze
-Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its historical significance as an optimization benchmark.
+Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its popular use as an optimization benchmark.
 
 ```
 import functioneer as fn
@@ -141,6 +143,9 @@ Thanks to the amazing open source communities: Python, numpy, pandas, etc that m
 Thanks to LightManufacturing, where I had the opportunity to develop advanced digital twins for solar thermal facilities... and then analyze them. It was here, where the seed for Functioneer was planted. 
 
 Thank you God for beaming down what seemed like the craziest idea at the time: to structure an analysis as a pipeline of *analysis steps* with the *parameters* flowing thru like water.
+
+## Dev
+If anyone wants to help develop Functioneer, there are issues on GitHub with planned features and a dev_notes folder containing possibly useful chicken scratch.
 
 ## License
 
