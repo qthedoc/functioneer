@@ -1,7 +1,14 @@
 # Changelog
+## [0.4.0](https://github.com/qthedoc/functioneer/compare/v0.3.0...v0.4.0) (2025-06-24)
+
+### Important Updates
+
+* Multi Forks are now defined using dicts
+
+
 ## [0.3.0](https://github.com/qthedoc/functioneer/compare/v0.2.2...v0.3.0) (2025-06-24)
 
-### Updates
+### Important Updates
 
 * Fleshed out optimizer
 * Added lots of validation

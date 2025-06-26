@@ -32,13 +32,11 @@ from functioneer.parameter import ParameterSet, Parameter
 class AnalysisStep():
     """
     Base class for analysis steps in functioneer.
-
-    Parameters
-    ----------
-    condition : callable, optional
-        Function that returns a boolean to determine if the step should run.
     """
     def __init__(self, condition: Callable[..., bool] | None = None) -> None:
+        """
+        Validates condition
+        """
         if condition is not None and not isinstance(condition, Callable):
             raise ValueError(f"AnalysisStep condition must be a function that returns a bool")
         
@@ -68,7 +66,6 @@ class AnalysisStep():
         TODO decide if Default behavior is to COPY or PASS the paramset
         """
         if not isinstance(paramset, ParameterSet):
-            # logging.error(f"paramset is not of type ParameterSet")
             raise ValueError(f"paramset is not of type ParameterSet")
 
         return (paramset,)
@@ -89,28 +86,17 @@ class Define(AnalysisStep):
     Define AnalysisStep: Adds parameter to parameterset
     Will create new Parameter in ParameterSet if one does not already exist.
     """
-    def __init__(self, 
-            param_id: str,
-            value = None,
-            # func = None,
-            condition = None
-        ):
+    def __init__(self, param_id: str, value: Any = None, condition: Callable[..., bool] | None = None):
         super().__init__(condition)
-
         try:
             Parameter.validate_id(param_id)
         except ValueError as e:
             raise ValueError(f"Invalid param_id: {str(e)}") from e
-
         self.parameter = Parameter(param_id, value)
 
     def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
-        # Validate
         super().run(paramset)
-
-        # add new Parameter to Paramset
         paramset.add_param(self.parameter)
-        
         return (paramset,)
     
     def get_details(self) -> Dict[str, Any]:
@@ -152,41 +138,26 @@ class Fork(AnalysisStep):
     >>> fork = Fork(('x', 'y'), ((0, 1), (2, 3)))  # Multi-parameter fork
     >>> fork = Fork(['x', 'y'], [(0, 1), (2, 3)])  # List input
     """
-    def __init__(self, 
-            param_id_or_ids,
-            value_set_or_sets,
-            condition = None
-            ):
+    def __init__(self, param_value_sets: dict, condition: Callable[..., bool] | None = None):
         super().__init__(condition)
+        if not isinstance(param_value_sets, dict):
+            raise ValueError("param_value_sets must be a dictionary with format {'param_id': (value1, value2, ...)}")
+        self.param_value_sets = param_value_sets
 
-        # Handle single parameter id
-        if isinstance(param_id_or_ids, str):
-            param_ids = (param_id_or_ids,)
-            value_sets = (value_set_or_sets,)
-        else:
-            param_ids = param_id_or_ids
-            value_sets = value_set_or_sets
-            
-        # Validate param_ids tuple
-        try:
-            Parameter.validate_id_iterable(param_ids)
-        except ValueError as e:
-            raise ValueError(f"Fork param_ids must be a valid param id or a tuple of valid param ids: {str(e)}") from e
-        self.param_ids = tuple(param_ids)
-
-        # Validate value_sets
-        if not isinstance(value_sets, (tuple, list)):
-            raise ValueError(f"Invalid Fork ({', '.join(self.param_ids)}): value_set_or_sets must be a tuple/list of values or a tuple/list of tuples for multi-parameter forks")
-        if len(self.param_ids) != len(value_sets):
-            raise ValueError(f"Invalid Fork ({', '.join(self.param_ids)}): Mismatch between number of parameters and number of value sets.")
+        # Validate parameter IDs
+        for param_id in self.param_value_sets:
+            try:
+                Parameter.validate_id(param_id)
+            except ValueError as e:
+                raise ValueError(f"Invalid param_id '{param_id}': {str(e)}") from e
         
-        # Validate same number of values in each set
-        self.value_cnt = len(value_sets[0])
-        for vset in value_sets:
-            if len(vset) != self.value_cnt:
-                raise ValueError(f"Invalid Fork ({', '.join(self.param_ids)}): Each parameter's value set must be the same length") 
-            
-        self.value_sets = tuple(value_sets)
+        # Validate value sets
+        value_lengths = [len(values) for values in self.param_value_sets.values()]
+        if not value_lengths:
+            raise ValueError("param_value_sets dictionary cannot be empty")
+        if len(set(value_lengths)) > 1:
+            raise ValueError("All value sets in param_value_sets must have the same length")
+        self.value_cnt = value_lengths[0]
 
         # TODO Validate value types
         # this will be optional but left alone and values are tuples then it might be good to throw a warning in case user meant 
@@ -196,25 +167,22 @@ class Fork(AnalysisStep):
 
     def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
         super().run(paramset)
+        if self.value_cnt == 0:
+            return (paramset,)
         
         # Do forky stuff
-        
         next_paramsets = []
-        for branch_idx in range(self.value_cnt):
-            ps: ParameterSet = copy.deepcopy(paramset)
-            for id, vs in zip(self.param_ids, self.value_sets):
-                val = vs[branch_idx]
-                ps.update_param(id, val)
-
+        for i in range(self.value_cnt):
+            ps = copy.deepcopy(paramset)
+            for param_id, values in self.param_value_sets.items():
+                ps.update_param(param_id, values[i])
             next_paramsets.append(ps)
-
         return tuple(next_paramsets)
     
     def get_details(self) -> Dict[str, Any]:
         details = super().get_details()
         details.update({
-            'param_ids': self.param_ids,
-            'value_sets': self.value_sets
+            'param_value_sets': self.param_value_sets
         })
         return details
     
@@ -382,10 +350,10 @@ class Optimize(AnalysisStep):
     ----------
     func : callable
         The objective function to optimize. Must return a scalar value.
+    opt_param_ids : iterable of str, optional
+        Parameter IDs to optimize.    
     assign_to : str, optional
         Parameter ID where the optimized objective value is stored. Defaults to func.__name__ if not a lambda.
-    opt_param_ids : iterable of str, optional
-        Parameter IDs to optimize.
     direction : {'min', 'max'}, optional
         Direction of optimization. Default is 'min' (minimization).
     optimizer : str or callable, optional
@@ -432,8 +400,8 @@ class Optimize(AnalysisStep):
     """
     def __init__(self,
         func: Callable,
+        opt_param_ids: Tuple[str, ...],
         assign_to: Optional[str] = None,
-        opt_param_ids: Optional[Tuple[str, ...]] = None,
         direction: str = 'min',
         optimizer: Union[str, Callable] = 'SLSQP',
         tol: Optional[float] = None,
