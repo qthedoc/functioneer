@@ -1,14 +1,14 @@
 # Functioneer
 
 **Author**: Quinn Marsh\
-**GitHub**: https://github.com/qthedoc/functioneer/
-**PyPI**: https://pypi.org/project/functioneer/
+**GitHub**: https://github.com/qthedoc/functioneer/ \
+**PyPI**: https://pypi.org/project/functioneer/ 
 
-With Functioneer on your side, prepare to become an analysis wizard. Effortlessly explore your functions with the ultimate batch runner. In just a few lines of code, you can set up tests for thousands or even millions of parameter combinations and optimizations. Perfect for parameter sweeps, engineering simulations, and digital twin optimization.
+Functioneer is the ultimate batch runner. Prepare to be an analysis ninja, effortlessly exploring your functions. In just a few lines of code, you can set up thousands or even millions of tests and optimizations on your function. Perfect for parameter sweeps, engineering simulations, digital twin optimization and much more.
 
 ## Quick Start
 
-**Full set of examples**: [Examples.ipynb](https://github.com/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
+**Full set of examples**: [Examples.ipynb (GitHub)](https://github.com/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
 *This is currently the main form of documentation.
 
 ### Installation
@@ -140,7 +140,7 @@ Thanks to the amazing open source communities: Python, numpy, pandas, etc that m
 
 Thanks to LightManufacturing, where I had the opportunity to develop advanced digital twins for solar thermal facilities... and then analyze them. It was here, where the seed for Functioneer was planted. 
 
-Thanks to God for incepting my mind with what seemed like the craziest idea at the time: to structure an analysis as a pipeline of *analysis steps* with the *parameters* flowing thru like water.
+Thank you God for beaming down what seemed like the craziest idea at the time: to structure an analysis as a pipeline of *analysis steps* with the *parameters* flowing thru like water.
 
 ## License
 
