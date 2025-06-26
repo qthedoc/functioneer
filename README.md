@@ -30,7 +30,7 @@ def rosenbrock(x, y, a, b):
 
 **Goal**: Test `rosenbrock` function with multiple values for parameters `x` and `y`.
 
-Note: forks for `x` and `y` create a 'grid' of values
+Note: forks for `x` and `y` create a 'grid' of values\
 Note: Parameter IDs MUST match your function's args, function evals inside functioneer are fully keyword arg based.
 ```
 anal = fn.AnalysisModule() # Create new analysis
@@ -79,11 +79,11 @@ Example 2 Output:
 ```
 ## Key Features
 
-- **Test variations of a parameter with a single line of code:** Avoid writing deeply nested loops. Typically varying *n* parameters requires *n* nested loops
+- **Test variations of a parameter with a single line of code:** Avoid writing deeply nested loops. Typically varying *n* parameters requires *n* nested loops... not anymore!
 
 - **Quickly swap out optimization variables:** Most optimization libraries require your function to take in a list or array of values, BUT this makes it very annoying to remap your parameters to and from the array each time you simple want to change an optimization parameter!
 
-- **Get results in a consistent easy to use format:** No more questions, the results are presented in a pandas data frame every time.
+- **Get results in a consistent easy to use format:** No more questions, the results are presented in a nice clean pandas data frame every time.
 
 ## Use cases
 
@@ -132,15 +132,14 @@ Summary of most useful types of *analysis steps*:
 </details>
 
 ## Inspiration
-I wanted to be an Analysis Ninja... effortlessly swapping parameters and optimization variables and most importantly getting results quickly! But manually rearranging code for what seemed like simple asks (like adding a variable to the analysis, or swapping out an optimization variable) was really baking my noodle. Thus Functioneer was born!
+I wanted to be an Analysis Ninja... effortlessly swapping parameters and optimization variables and most importantly getting results quickly! But manually rearranging code for what seemed like simple asks was really baking my noodle. Simple things like adding a variable to the analysis, or swapping out an optimization variable, required a shocking amount of code rework. Thus Functioneer was born.
 
 ## Acknowledgments
 Thanks to the amazing open source communities: Python, numpy, pandas, etc that make this possible.
 
-Thanks to LightManufacturing, where I had the opportunity to develop advanced digital twins for solar thermal facilities... and then analyze them. It was here, where the seed for functioneer was planted. 
+Thanks to LightManufacturing, where I had the opportunity to develop advanced digital twins for solar thermal facilities... and then analyze them. It was here, where the seed for Functioneer was planted. 
 
 Thanks to God for incepting my mind with what seemed like the craziest idea at the time: to structure an analysis as a pipeline of *analysis steps* with the *parameters* flowing thru like water.
-
 
 ## License
 
