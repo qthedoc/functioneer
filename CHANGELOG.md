@@ -1,4 +1,10 @@
 # Changelog
+## [0.4.1](https://github.com/qthedoc/functioneer/compare/v0.4.1...v0.4.2) (2025-06-24)
+
+### Important Updates
+
+* Docs Updated - yeah the (anal)ysis had to go: `anal.add.fork` ... no thanks!
+
 ## [0.4.1](https://github.com/qthedoc/functioneer/compare/v0.4.0...v0.4.1) (2025-06-24)
 
 ### Important Updates

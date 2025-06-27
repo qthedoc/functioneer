@@ -36,12 +36,12 @@ def rosenbrock(x, y, a, b):
 Note: forks for `x` and `y` create a 'grid' of values\
 Note: Parameter IDs MUST match your function's args, function evals inside functioneer are fully keyword arg based.
 ```
-anal = fn.AnalysisModule() # Create new analysis
-anal.add.define({'a': 1, 'b': 100}) # define a and b
-anal.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
-anal.add.fork('y', (1, 10))
-anal.add.execute(func=rosenbrock) #
-results = anal.run()
+analysis = fn.AnalysisModule() # Create new analysis
+analysis.add.define({'a': 1, 'b': 100}) # define a and b
+analysis.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
+analysis.add.fork('y', (1, 10))
+analysis.add.execute(func=rosenbrock) #
+results = analysis.run()
 print('Example 1 Output:')
 print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
 ```
@@ -62,11 +62,11 @@ Example 1 Output:
 
 Note: values for `x` and `y` before optimization are used as initial guesses
 ```
-anal = fn.AnalysisModule({'x': 0, 'y': 0})
-anal.add.fork('a', (1, 2))
-anal.add.fork('b', (0, 100, 200))
-anal.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
-results = anal.run()
+analysis = fn.AnalysisModule({'x': 0, 'y': 0})
+analysis.add.fork('a', (1, 2))
+analysis.add.fork('b', (0, 100, 200))
+analysis.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
+results = analysis.run()
 print('\nExample 2 Output:')
 print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
 ```
