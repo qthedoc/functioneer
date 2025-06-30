@@ -26,7 +26,7 @@ import pandas as pd
 from datetime import datetime
 import time
 
-from functioneer.steps import AnalysisStep, Define, Fork, Execute, Optimize
+from functioneer.steps import AnalysisStep, Define, Fork, Evaluate, Optimize
 from functioneer.parameter import ParameterSet, Parameter
 from functioneer.util import call_with_matched_kwargs
 
@@ -166,25 +166,25 @@ class AnalysisModule():
             else:
                 raise ValueError("Expected (param_id, value_set) or {param_id: value_set, ...}")
             
-        def execute(self, func: Callable[..., Any], assign_to: Optional[Union[str, List[str], Tuple[str, ...]]] = None, unpack_result: bool = False, condition: Optional[Callable[..., bool]] = None) -> None:
-            """Execute a function and store its result in the ParameterSet.
+        def evaluate(self, func: Callable[..., Any], assign_to: Optional[Union[str, List[str], Tuple[str, ...]]] = None, unpack_result: bool = False, condition: Optional[Callable[..., bool]] = None) -> None:
+            """Evaluate a function and store its result in the ParameterSet.
 
             Args:
-                func: Function to execute, taking parameter values as input.
+                func: Function to evaluate, taking parameter values as input.
                 assign_to: Custom Parameter ID(s) to store the result (str or list/tuple of strings).
                 unpack_result: If True, unpacks a dictionary result into multiple parameters.
                 condition: Optional condition function to determine if the step should run.
 
             Examples:
-                >>> anal.add.execute(my_function)  # Execute function, store result
-                >>> anal.add.execute(my_function, assign_to='new_param')  # Execute function, store result to param: 'new_param'
-                >>> anal.add.execute(my_function_returns_dict, unpack_result=True)  # Unpack dict result
-                >>> anal.add.execute(my_function_returns_dict, assign_to=['out_1', 'out_2'], unpack_result=True)  # Unpack only dict keys: out_1, out_2
+                >>> anal.add.evaluate(my_function)  # Evaluate function, store result
+                >>> anal.add.evaluate(my_function, assign_to='new_param')  # Evaluate function, store result to param: 'new_param'
+                >>> anal.add.evaluate(my_function_returns_dict, unpack_result=True)  # Unpack dict result
+                >>> anal.add.evaluate(my_function_returns_dict, assign_to=['out_1', 'out_2'], unpack_result=True)  # Unpack only dict keys: out_1, out_2
 
             Raises:
                 ValueError: If func is not callable or assign_to is invalid.
             """
-            self.parent.sequence.append(Execute(func, assign_to, unpack_result, condition))
+            self.parent.sequence.append(Evaluate(func, assign_to, unpack_result, condition))
                 
         def optimize(self, func: Callable[..., float], opt_param_ids: Tuple[str, ...], assign_to: Optional[str] = None, direction: str = 'min', optimizer: Union[str, Callable] = 'SLSQP', tol: Optional[float] = None, bounds: Optional[Dict[str, Tuple[float, float]]] = None, options: Optional[Dict[str, Any]] = None, condition: Optional[Callable[..., bool]] = None, **kwargs) -> None:
             """Optimize a function over specified parameters.
@@ -214,7 +214,7 @@ class AnalysisModule():
             # create_pandas = True,
             # verbose = True
         )  -> Dict[str, Any]:
-        """Execute the analysis sequence and return results including a DataFrame of leaf data.
+        """Evaluate the analysis sequence and return results including a DataFrame of leaf data.
 
         Returns:
             Dict[str, Any]: Dictionary containing the results DataFrame, runtime, and number of finished leaves.

@@ -40,7 +40,7 @@ analysis = fn.AnalysisModule() # Create new analysis
 analysis.add.define({'a': 1, 'b': 100}) # define a and b
 analysis.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
 analysis.add.fork('y', (1, 10))
-analysis.add.execute(func=rosenbrock) #
+analysis.add.evaluate(func=rosenbrock) #
 results = analysis.run()
 print('Example 1 Output:')
 print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
@@ -101,7 +101,7 @@ At its core, functioneer organizes analyses as a tree where a *set of parameters
 Summary of most useful types of *analysis steps*:
 - Define: Adds a new parameter to the analysis
 - Fork: Splits the analysis into multiple parallel *branches*, each exploring different values for a specific parameter
-- Execute: Calls a provided function using the parameters
+- Evaluate: Calls a provided function using the parameters
 - Optimize: Quickly set up an optimization by providing a function and defining which parameters are going to be optimized
 
 <details>

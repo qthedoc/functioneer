@@ -46,7 +46,7 @@ class AnalysisStep():
 
     def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
         """
-        Execute the analysis step, returning a tuple of modified ParameterSets.
+        Evaluate the analysis step, returning a tuple of modified ParameterSets.
 
         Parameters
         ----------
@@ -186,14 +186,14 @@ class Fork(AnalysisStep):
         })
         return details
     
-class Execute(AnalysisStep):
+class Evaluate(AnalysisStep):
     """
-    Execute AnalysisStep: Executes a provided function and updates the ParameterSet with results.
+    Evaluate AnalysisStep: Evaluates a provided function and updates the ParameterSet with results.
 
     Parameters
     ----------
     func : callable
-        The function to execute. Output can be any type if unpack_result=False and assign_to is a string,
+        The function to evaluate. Output can be any type if unpack_result=False and assign_to is a string,
         or a dictionary if unpack_result=True.
     assign_to : str or iterable of str, optional
         Parameter ID(s) where the function output is stored. If a string and unpack_result=False, stores
@@ -212,14 +212,14 @@ class Execute(AnalysisStep):
     >>> anal = AnalysisModule({'x': 0, 'y': 0})
     >>> def add(x, y):
     ...     return x + y
-    >>> anal.add.execute(func=add, assign_to='sum')  # Stores scalar 0 in 'sum'
-    >>> anal.add.execute(func=add)  # Stores scalar 0 in 'add'
+    >>> anal.add.evaluate(func=add, assign_to='sum')  # Stores scalar 0 in 'sum'
+    >>> anal.add.evaluate(func=add)  # Stores scalar 0 in 'add'
     >>> def dict_func(x, y):
     ...     return {'sum': x + y, 'product': x * y}
-    >>> anal.add.execute(func=dict_func, assign_to='results')  # Stores {'sum': 0, 'product': 0} in 'results'
-    >>> anal.add.execute(func=dict_func, assign_to=['sum', 'product'], unpack_result=True)  # Stores sum=0, product=0
-    >>> anal.add.execute(func=dict_func, unpack_result=True)  # Unpacks sum=0, product=0
-    >>> anal.add.execute(func=lambda x, y: [x, y], assign_to='list_result')  # Stores [0, 0] in 'list_result'
+    >>> anal.add.evaluate(func=dict_func, assign_to='results')  # Stores {'sum': 0, 'product': 0} in 'results'
+    >>> anal.add.evaluate(func=dict_func, assign_to=['sum', 'product'], unpack_result=True)  # Stores sum=0, product=0
+    >>> anal.add.evaluate(func=dict_func, unpack_result=True)  # Unpacks sum=0, product=0
+    >>> anal.add.evaluate(func=lambda x, y: [x, y], assign_to='list_result')  # Stores [0, 0] in 'list_result'
     """
     def __init__(self,
             func: Callable,
@@ -231,7 +231,7 @@ class Execute(AnalysisStep):
 
         # Validate func
         if not isinstance(func, Callable):
-            raise ValueError("Invalid Execute: 'func' must be a callable")
+            raise ValueError("Invalid Evaluate: 'func' must be a callable")
         self.func = func
 
         # Handle assign_to
@@ -243,34 +243,34 @@ class Execute(AnalysisStep):
         # Handle unpack_result
         self.unpack_result = unpack_result if unpack_result is not None else False
         if not isinstance(self.unpack_result, bool):
-            raise ValueError(f"Invalid Execute: 'unpack_result' must be a boolean, got {type(self.unpack_result)}")
+            raise ValueError(f"Invalid Evaluate: 'unpack_result' must be a boolean, got {type(self.unpack_result)}")
 
         # Validate assign_to
         if isinstance(assign_to, str):
             try:
                 Parameter.validate_id(assign_to)
             except ValueError as e:
-                raise ValueError(f"Invalid Execute: 'assign_to' is not a valid param id, got {assign_to}: {str(e)}") from e
+                raise ValueError(f"Invalid Evaluate: 'assign_to' is not a valid param id, got {assign_to}: {str(e)}") from e
             self.assign_to = assign_to
         elif isinstance(assign_to, (list, tuple)) and assign_to:
             try:
                 Parameter.validate_id_iterable(assign_to)
             except ValueError as e:
-                raise ValueError(f"Invalid Execute: 'assign_to' must be a valid iterable of param ids, got {assign_to}: {str(e)}") from e
+                raise ValueError(f"Invalid Evaluate: 'assign_to' must be a valid iterable of param ids, got {assign_to}: {str(e)}") from e
             self.assign_to = tuple(assign_to)
         else:
-            raise ValueError(f"Invalid Execute: 'assign_to' must be a string or non-empty iterable of strings, got {assign_to}")
+            raise ValueError(f"Invalid Evaluate: 'assign_to' must be a string or non-empty iterable of strings, got {assign_to}")
         
         # Error if unpack_result is False and assign_to is tuple/list
         if not self.unpack_result and isinstance(self.assign_to, tuple):
             raise ValueError(
-                f"Invalid Execute: assign_to={self.assign_to} is a tuple/list, but unpack_result=False. "
+                f"Invalid Evaluate: assign_to={self.assign_to} is a tuple/list, but unpack_result=False. "
                 f"Try setting unpack_result=True to explicitly indicate a dictionary output (which a tuple/list 'assign_to' expects. "
             )
 
     def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
         """
-        Executes the function and updates the ParameterSet with the output.
+        Evaluates the function and updates the ParameterSet with the output.
 
         Parameters
         ----------
@@ -304,18 +304,18 @@ class Execute(AnalysisStep):
         if self.unpack_result:
             if not isinstance(output, dict):
                 raise ValueError(
-                    f"Execute: Expected dictionary output for unpack_result=True, "
+                    f"Evaluate: Expected dictionary output for unpack_result=True, "
                     f"got {type(output)} with value {output}"
                 )
             if not output:
-                raise ValueError("Execute: Output dictionary is empty for unpack_result=True")
+                raise ValueError("Evaluate: Output dictionary is empty for unpack_result=True")
             
             # Use specified keys if assign_to is a tuple/list
             if isinstance(self.assign_to, tuple):
                 for key in self.assign_to:
                     if key not in output:
                         raise ValueError(
-                            f"Execute: Output dictionary missing key '{key}' for assign_to={self.assign_to}"
+                            f"Evaluate: Output dictionary missing key '{key}' for assign_to={self.assign_to}"
                         )
                     next_paramset.update_param(key, output[key])    
 
@@ -325,7 +325,7 @@ class Execute(AnalysisStep):
                     try:
                         Parameter.validate_id(key)
                     except ValueError as e:
-                        raise ValueError(f"Execute: Output key '{key}' is not a valid param id: {str(e)}") from e
+                        raise ValueError(f"Evaluate: Output key '{key}' is not a valid param id: {str(e)}") from e
                     next_paramset.update_param(key, value)
 
         # Handle any output type (unpack_result=False, string assign_to)
