@@ -9,7 +9,7 @@
 - Update version in pyproject.toml
 - Update version in __init__.py
 - Update CHANGELOG.md
-- Merge branch
+- Merge changes into main
 - tag release: git tag vX.X.X
 - push tag: git push origin vX.X.X
 - build: python -m build      

@@ -1,5 +1,12 @@
 # Changelog
-## [0.4.1](https://github.com/qthedoc/functioneer/compare/v0.4.1...v0.4.2) (2025-06-24)
+## [0.5.0](https://github.com/qthedoc/functioneer/compare/v0.4.2...v0.5.0) (2025-06-24)
+
+### Important Updates
+
+* API CHANGE: `execute()` changed to `evaluate()`
+* Forks can now handle *value configs*
+
+## [0.4.2](https://github.com/qthedoc/functioneer/compare/v0.4.1...v0.4.2) (2025-06-24)
 
 ### Important Updates
 
