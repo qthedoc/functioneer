@@ -21,9 +21,7 @@
 
 
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
-import logging
 import copy
-import warnings
 import numpy as np
 from scipy.optimize import minimize, dual_annealing, basinhopping, OptimizeResult
 
@@ -109,80 +107,68 @@ class Define(AnalysisStep):
     
 class Fork(AnalysisStep):
     """
-    Fork AnalysisStep: Splits analysis into parallel branches based on provided parameters and values.
-    Creates new parameters in ParameterSet if they do not already exist.
+    Fork AnalysisStep: Splits analysis into parallel branches based on provided parameter configurations.
+
+    Each configuration is a dictionary mapping parameter IDs to values. The analysis creates a new branch
+    for each configuration by updating the parameter set with the specified key-value pairs, adding new
+    parameters or overwriting existing ones as needed.
 
     Parameters
     ----------
-    param_id_or_ids : str or tuple/list of str
-        Parameter ID(s) to fork. Must be valid parameter IDs (non-empty strings, not reserved).
-    value_set_or_sets : tuple/list of values or tuple/list of tuples
-        Values to assign to the parameter(s) in each branch. For a single parameter, provide a
-        tuple/list of values. For multiple parameters, provide a tuple/list of tuples, where each
-        inner tuple contains values for the corresponding parameters. The number of value sets must
-        match the number of param_ids, and all inner value sets must have the same length.
+    configurations : list of dict
+        List of parameter configurations, where each dictionary contains parameter IDs (str) as keys
+        and their corresponding values. All configurations must share the same set of parameter IDs.
     condition : callable, optional
         Condition function to determine if the step should run.
 
     Raises
     ------
     ValueError
-        If param_id_or_ids are invalid, or if value_set_or_sets are not a non-empty tuple/list of
-        values/tuples with lengths matching param_ids and consistent across all value sets.
+        If configurations is not a list of dictionaries, is empty, contains inconsistent parameter IDs,
+        or includes invalid parameter IDs.
     TypeError
-        If condition is not callable or None.
+        If condition is provided but is not callable.
 
     Examples
     --------
-    >>> fork = Fork('x', (1, 2, 3))  # Single parameter fork
-    >>> fork = Fork(('x', 'y'), ((0, 1), (2, 3)))  # Multi-parameter fork
-    >>> fork = Fork(['x', 'y'], [(0, 1), (2, 3)])  # List input
+    >>> fork = Fork([{'x': 0}, {'x': 1}, {'x': 2}])  # Single parameter fork
+    >>> fork = Fork([{'x': 0, 'y': 10}, {'x': 1, 'y': 20}])  # Multi-parameter fork with configurations
     """
-    def __init__(self, param_value_sets: dict, condition: Callable[..., bool] | None = None):
+    def __init__(self, configurations: List[Dict[str, Any]], condition: Callable[..., bool] | None = None):
         super().__init__(condition)
-        if not isinstance(param_value_sets, dict):
-            raise ValueError("param_value_sets must be a dictionary with format {'param_id': (value1, value2, ...)}")
-        self.param_value_sets = param_value_sets
-
-        # Validate parameter IDs
-        for param_id in self.param_value_sets:
-            try:
-                Parameter.validate_id(param_id)
-            except ValueError as e:
-                raise ValueError(f"Invalid param_id '{param_id}': {str(e)}") from e
+        # Validate that configurations is a non-empty list of dictionaries
+        if not isinstance(configurations, (list, tuple)) or not all(isinstance(config, dict) for config in configurations):
+            raise ValueError("configurations must be a list or tuple of dictionaries")
+        if not configurations:
+            raise ValueError("configurations cannot be empty")
         
-        # Validate value sets
-        value_lengths = [len(values) for values in self.param_value_sets.values()]
-        if not value_lengths:
-            raise ValueError("param_value_sets dictionary cannot be empty")
-        if len(set(value_lengths)) > 1:
-            raise ValueError("All value sets in param_value_sets must have the same length")
-        self.value_cnt = value_lengths[0]
+        self.configurations = list(configurations)  # Convert to list for consistency
 
-        # TODO Validate value types
-        # this will be optional but left alone and values are tuples then it might be good to throw a warning in case user meant 
-        # raise ValueError(f"Warning: values of paramfork are of type 'tuple'. to silence this error set Parameter.value_type tot tuple")
-
-        # TODO: Provide one level higher of error handling at the analysis level that can provide context like step index.
+        # Validate parameter IDs and ensure consistency across configurations
+        # param_ids = set(self.configurations[0].keys())
+        for config in self.configurations:
+            # if set(config.keys()) != param_ids: # may turn on this optionally
+            #     raise ValueError("All configurations must have the same parameter IDs")
+            for param_id in config:
+                try:
+                    Parameter.validate_id(param_id)
+                except ValueError as e:
+                    raise ValueError(f"Invalid param_id '{param_id}': {str(e)}") from e
 
     def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
         super().run(paramset)
-        if self.value_cnt == 0:
-            return (paramset,)
-        
-        # Do forky stuff
         next_paramsets = []
-        for i in range(self.value_cnt):
+        for config in self.configurations:
             ps = copy.deepcopy(paramset)
-            for param_id, values in self.param_value_sets.items():
-                ps.update_param(param_id, values[i])
+            for param_id, value in config.items():
+                ps.update_param(param_id, value)  # Update or add parameter
             next_paramsets.append(ps)
         return tuple(next_paramsets)
-    
+
     def get_details(self) -> Dict[str, Any]:
         details = super().get_details()
         details.update({
-            'param_value_sets': self.param_value_sets
+            'configurations': self.configurations
         })
         return details
     

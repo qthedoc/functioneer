@@ -20,6 +20,7 @@
 # THE SOFTWARE.
 
 
+import itertools
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import copy
 import pandas as pd
@@ -139,32 +140,55 @@ class AnalysisModule():
             else:
                 raise ValueError("Expected (param_id, value) or {param_id: value, ...}")
             
-        def fork(self, param_or_dict: Union[str, Dict[str, Tuple[Any, ...]]], value_set: Optional[Tuple[Any, ...]] = None, condition: Optional[Callable[..., bool]] = None) -> None:
-            """Fork analysis with a single parameter or dictionary of parameter value sets.
+        def fork(self, param_or_dict_or_configs: Union[str, Dict[str, Tuple[Any, ...]], List[Dict[str, Any]], Tuple[Dict[str, Any], ...]], 
+             value_list: Optional[Tuple[Any, ...]] = None, condition: Optional[Callable[..., bool]] = None) -> None:
+            """Fork analysis with a single parameter, dictionary of parameter value lists, or list of parameter configurations.
 
             Args:
-                param_or_dict: Parameter ID (str) or dictionary of parameter IDs to value sets.
-                value_set: Tuple of values for the parameter (if param_or_dict is a string).
+                param_or_dict_or_configs: Parameter ID (str), dictionary of parameter IDs to value lists, or list/tuple of parameter configurations.
+                value_list: Tuple of values for the parameter (if param_or_dict_or_configs is a string).
                 condition: Optional condition function to determine if the step should run.
 
             Examples:
                 >>> anal.add.fork('x', (0, 1, 2))  # Fork single parameter
-                >>> anal.add.fork({'x': (0, 1, 2), 'y': (0, 10, 20)})  # Fork multiple parameters
+                >>> anal.add.fork({'x': (0, 1), 'y': (10, 20)})  # Fork multiple parameters with value lists
+                >>> anal.add.fork([{'x': 0, 'y': 0}, {'x': 1, 'y': 10}])  # Fork with parameter configurations
 
             Raises:
-                ValueError: If inputs are invalid (e.g., wrong types, missing value_set, or value_set provided with dict).
+                ValueError: If inputs are invalid (e.g., wrong types, missing value_list, non-iterable value lists, or inconsistent configurations).
             """
-            if isinstance(param_or_dict, dict):
-                if value_set is not None:
-                    raise ValueError(
-                        "When forking multiple parameters with a dictionary, the 'value_set' argument is ignored. "
-                        "Use either fork(param_id: str, value_set: Tuple[Any, ...]) or fork(params: Dict[str, Tuple[Any, ...]])."
-                    )
-                self.parent.sequence.append(Fork(param_or_dict, condition))
-            elif isinstance(param_or_dict, str) and value_set is not None:
-                self.parent.sequence.append(Fork({param_or_dict: value_set}, condition))
+            if isinstance(param_or_dict_or_configs, str):
+                if value_list is None:
+                    raise ValueError("value_list must be provided for single parameter fork")
+                if not isinstance(value_list, (list, tuple)):
+                    raise ValueError("value_list must be a list or tuple of parameter values")
+                configurations = [{param_or_dict_or_configs: value} for value in value_list]
+            elif isinstance(param_or_dict_or_configs, dict):
+                param_ids = list(param_or_dict_or_configs.keys())
+                value_lists = list(param_or_dict_or_configs.values())
+                # Validate that value lists are iterable and same length
+                for vs in value_lists:
+                    if not isinstance(vs, (list, tuple)):
+                        raise ValueError("Value lists must be lists or tuples")
+                value_lengths = [len(values) for values in value_lists]
+                if not value_lengths:
+                    raise ValueError("param_value_lists dictionary cannot be empty")
+                if len(set(value_lengths)) > 1:
+                    raise ValueError("All value lists must have the same length")
+                
+                # Compute create configurations
+                value_configs = zip(*value_lists)
+                configurations = [dict(zip(param_ids, values)) for values in value_configs]
+
+            elif isinstance(param_or_dict_or_configs, (list, tuple)):
+                configurations = param_or_dict_or_configs
+                # Validate that configurations is a list of dictionaries
+                if not all(isinstance(config, dict) for config in configurations):
+                    raise ValueError("Configurations must be a list or tuple of dictionaries")
             else:
-                raise ValueError("Expected (param_id, value_set) or {param_id: value_set, ...}")
+                raise ValueError("Invalid input for fork: expected str, dict, or list/tuple of dicts")
+
+            self.parent.sequence.append(Fork(configurations, condition))
             
         def evaluate(self, func: Callable[..., Any], assign_to: Optional[Union[str, List[str], Tuple[str, ...]]] = None, unpack_result: bool = False, condition: Optional[Callable[..., bool]] = None) -> None:
             """Evaluate a function and store its result in the ParameterSet.
