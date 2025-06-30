@@ -141,43 +141,43 @@ class AnalysisModule():
                 raise ValueError("Expected (param_id, value) or {param_id: value, ...}")
             
         def fork(self, param_or_dict_or_configs: Union[str, Dict[str, Tuple[Any, ...]], List[Dict[str, Any]], Tuple[Dict[str, Any], ...]], 
-             value_set: Optional[Tuple[Any, ...]] = None, condition: Optional[Callable[..., bool]] = None) -> None:
-            """Fork analysis with a single parameter, dictionary of parameter value sets, or list of parameter configurations.
+             value_list: Optional[Tuple[Any, ...]] = None, condition: Optional[Callable[..., bool]] = None) -> None:
+            """Fork analysis with a single parameter, dictionary of parameter value lists, or list of parameter configurations.
 
             Args:
-                param_or_dict_or_configs: Parameter ID (str), dictionary of parameter IDs to value sets, or list/tuple of parameter configurations.
-                value_set: Tuple of values for the parameter (if param_or_dict_or_configs is a string).
+                param_or_dict_or_configs: Parameter ID (str), dictionary of parameter IDs to value lists, or list/tuple of parameter configurations.
+                value_list: Tuple of values for the parameter (if param_or_dict_or_configs is a string).
                 condition: Optional condition function to determine if the step should run.
 
             Examples:
                 >>> anal.add.fork('x', (0, 1, 2))  # Fork single parameter
-                >>> anal.add.fork({'x': (0, 1), 'y': (10, 20)})  # Fork multiple parameters with value sets
+                >>> anal.add.fork({'x': (0, 1), 'y': (10, 20)})  # Fork multiple parameters with value lists
                 >>> anal.add.fork([{'x': 0, 'y': 0}, {'x': 1, 'y': 10}])  # Fork with parameter configurations
 
             Raises:
-                ValueError: If inputs are invalid (e.g., wrong types, missing value_set, non-iterable value sets, or inconsistent configurations).
+                ValueError: If inputs are invalid (e.g., wrong types, missing value_list, non-iterable value lists, or inconsistent configurations).
             """
             if isinstance(param_or_dict_or_configs, str):
-                if value_set is None:
-                    raise ValueError("value_set must be provided for single parameter fork")
-                if not isinstance(value_set, (list, tuple)):
-                    raise ValueError("value_set must be a list or tuple of parameter values")
-                configurations = [{param_or_dict_or_configs: value} for value in value_set]
+                if value_list is None:
+                    raise ValueError("value_list must be provided for single parameter fork")
+                if not isinstance(value_list, (list, tuple)):
+                    raise ValueError("value_list must be a list or tuple of parameter values")
+                configurations = [{param_or_dict_or_configs: value} for value in value_list]
             elif isinstance(param_or_dict_or_configs, dict):
                 param_ids = list(param_or_dict_or_configs.keys())
-                value_sets = list(param_or_dict_or_configs.values())
-                # Validate that value sets are iterable and same length
-                for vs in value_sets:
+                value_lists = list(param_or_dict_or_configs.values())
+                # Validate that value lists are iterable and same length
+                for vs in value_lists:
                     if not isinstance(vs, (list, tuple)):
-                        raise ValueError("Value sets must be lists or tuples")
-                value_lengths = [len(values) for values in value_sets]
+                        raise ValueError("Value lists must be lists or tuples")
+                value_lengths = [len(values) for values in value_lists]
                 if not value_lengths:
-                    raise ValueError("param_value_sets dictionary cannot be empty")
+                    raise ValueError("param_value_lists dictionary cannot be empty")
                 if len(set(value_lengths)) > 1:
-                    raise ValueError("All value sets must have the same length")
+                    raise ValueError("All value lists must have the same length")
                 
                 # Compute create configurations
-                value_configs = zip(*value_sets)
+                value_configs = zip(*value_lists)
                 configurations = [dict(zip(param_ids, values)) for values in value_configs]
 
             elif isinstance(param_or_dict_or_configs, (list, tuple)):
