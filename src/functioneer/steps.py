@@ -281,7 +281,7 @@ class Evaluate(AnalysisStep):
         next_paramset = copy.deepcopy(paramset)
 
         try:
-            output = next_paramset.call_with_matched_kwargs(self.func)
+            output = next_paramset.call_with_kwargs(self.func)
         except Exception as e:
             raise RuntimeError(f"Error executing function {getattr(self.func, '__name__', '<lambda>')}: {str(e)}") from e
         
@@ -478,7 +478,7 @@ class Optimize(AnalysisStep):
             try:
                 test_paramset = copy.deepcopy(next_paramset)
                 test_paramset.update_param_values(dict(zip(self.opt_param_ids, x))) # Create test parameter set with values from x
-                obj_val = test_paramset.call_with_matched_kwargs(self.func) # evaluate objective parameter
+                obj_val = test_paramset.call_with_kwargs(self.func) # evaluate objective parameter
                 if not isinstance(obj_val, (int, float, np.number)):
                     raise ValueError(f"Objective function returned non-scalar value: {obj_val}")
                 if not np.isfinite(obj_val):

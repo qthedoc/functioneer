@@ -309,7 +309,7 @@ class AnalysisModule():
 
             # Check step condition
             try:
-                run_step = paramset.call_with_matched_kwargs(step.condition) if step.condition else True
+                run_step = paramset.call_with_kwargs(step.condition) if step.condition else True
             except Exception as e:
                 raise RuntimeError(f"Error evaluating step condition: {str(e)}") from e
 

@@ -22,7 +22,9 @@
 
 import logging
 import inspect
-from typing import Any
+from typing import Any, Callable
+
+from functioneer.util import call_with_kwargs
 
 class Parameter():
     def __init__(self,
@@ -104,7 +106,6 @@ class Parameter():
             
 class ParameterSet(dict[str, Parameter]):
     def __init__(self):
-
         self.add_param(Parameter('runtime', 0))
 
     def add_param(self, parameter):
@@ -150,45 +151,23 @@ class ParameterSet(dict[str, Parameter]):
     # def get_value_list(self, param_ids):
     #     # TODO Validate param_ids are in paramset
     #     return [self[id].value for id in param_ids]
-    
-    def call_with_matched_kwargs(self, func):
+
+    def call_with_kwargs(self, func: Callable) -> Any:
         """
-        Calls function with parameter values from the ParameterSet with matching keyword args.
-        Throws error if required arg is missing in paramset.
+        Calls a function with parameter values from the ParameterSet, using matching keyword args.
+        Supports functions with **kwargs and checks for missing required arguments.
+        Functions with *args are not supported and raise an error.
+
+        Args:
+            func: The function to call.
+
+        Returns:
+            The result of the function call.
+
+        Raises:
+            ValueError: If required arguments are missing or if the function has *args.
         """
-        kwargs = self.values_dict
+        return call_with_kwargs(func, self.values_dict)
 
-        # Get the function signature
-        signature = inspect.signature(func)
-        arguments = signature.parameters
-
-        # Match provided kwargs with function arguments
-        matched_kwargs = {}
-        missing_args = []
-        for name, arg in arguments.items():
-            if name in kwargs:
-                matched_kwargs[name] = kwargs[name]
-            elif arg.default == inspect.Parameter.empty:
-                missing_args.append(name)
-
-        # Raise a warning if required arguments are missing
-        if missing_args:
-            missing_args = [f"'{arg}'" for arg in missing_args]
-            # TODO: catch this error higher up so we can provide info about WHAT param or function was being evaluated
-            raise KeyError(f"Missing the following required params while evaluating function: {', '.join(missing_args)}")
-
-        # Call the function with matched kwargs
-        return func(**matched_kwargs)
-
-    def call_with_positional_args(self, func, param_ids):
-        """
-        Calls function with parameter values as positional args.
-        The order of the args is the same as given in 'param_ids'.
-        """
-        # arg_list = self.get_value_list(self.input_params)
-
-        # TODO Validate param_ids are in paramset
-        arg_list = [self[id].value for id in param_ids]
-        return func(*arg_list)
 
 
