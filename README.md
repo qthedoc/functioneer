@@ -22,7 +22,7 @@ pip install functioneer
 Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its popular use as an optimization benchmark.
 
 ```
-import functioneer as fn
+from functioneer import AnalysisModule
 
 # Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
 def rosenbrock(x, y, a, b):
@@ -36,7 +36,7 @@ def rosenbrock(x, y, a, b):
 Note: forks for `x` and `y` create a 'grid' of values\
 Note: Parameter IDs MUST match your function's args, function evals inside functioneer are fully keyword arg based.
 ```
-analysis = fn.AnalysisModule() # Create new analysis
+analysis = AnalysisModule() # Create new analysis
 analysis.add.define({'a': 1, 'b': 100}) # define a and b
 analysis.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
 analysis.add.fork('y', (1, 10))
@@ -62,7 +62,7 @@ Example 1 Output:
 
 Note: values for `x` and `y` before optimization are used as initial guesses
 ```
-analysis = fn.AnalysisModule({'x': 0, 'y': 0})
+analysis = AnalysisModule({'x': 0, 'y': 0})
 analysis.add.fork('a', (1, 2))
 analysis.add.fork('b', (0, 100, 200))
 analysis.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))

@@ -30,7 +30,6 @@ import time
 
 from functioneer.steps import AnalysisStep, Define, Fork, Evaluate, Optimize
 from functioneer.parameter import ParameterSet, Parameter
-from functioneer.util import call_with_matched_kwargs
 
 ## TODO: work towards staged analysis (eg. needed for pick best 10) 
 # allow for a tuple of dicts for starting with multiple parameter sets, 
