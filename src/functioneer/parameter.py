@@ -119,9 +119,10 @@ class ParameterSet(dict[str, Parameter]):
 
         self[id] = parameter
 
-    def get_value(self, param_id, default=None):
+    def get_value(self, param_id: str, default=None):
         parameter = self.get(param_id)
-        return parameter.value if parameter else default
+        value = parameter.value if (parameter and parameter.value is not None) else default
+        return value 
 
     @property
     def values_dict(self):

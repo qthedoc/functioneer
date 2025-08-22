@@ -19,14 +19,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-
-import itertools
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import copy
 import numpy as np
 import pandas as pd
 from datetime import datetime
 import time
+from tqdm.notebook import tqdm
 
 from functioneer.steps import AnalysisStep, Define, Fork, Evaluate, Optimize
 from functioneer.parameter import ParameterSet, Parameter
@@ -55,7 +54,7 @@ class AnalysisModule():
     TypeError
         If name is not a string.
     """
-    def __init__(self, init_param_values={}, name='') -> None:
+    def __init__(self, init_param_values={}, name='', error_handling='skip_leaf') -> None:
         """ Initialize Functioneer Analysis
 
         Args:
@@ -65,9 +64,14 @@ class AnalysisModule():
                 Defaults to an empty dictionary.
             name : str, optional
                 Name of the analysis module. Defaults to an empty string.
+            error_handling : str, optional
+                Determines behavior on errors in steps. Options: 'exit' (raises error and stops analysis),
+                'skip_leaf' (skips the current branch and records partial data), 'continue_leaf' (continues
+                the branch, skipping the failed step). Defaults to 'skip_leaf'.
 
         Raises:
             ValueError: If init_param_values is not a dictionary, contains invalid parameter IDs, or includes reserved names.
+            If error_handling is not one of the valid options.
             TypeError: If name is not a string.
         """
         if not isinstance(name, str):
@@ -77,12 +81,21 @@ class AnalysisModule():
         for param_id in init_param_values:
             Parameter.validate_id(param_id)
 
+        valid_error_handling = ['exit', 'skip_leaf', 'continue_leaf']
+        if error_handling not in valid_error_handling:
+            raise ValueError(f"Invalid error_handling: must be one of {valid_error_handling}, got '{error_handling}'")
+
         self.name = name
         self.sequence: list[AnalysisStep] = []
         self.init_paramset: ParameterSet = ParameterSet()
         self.init_paramset.update_param_values(init_param_values)
         self.init_paramset.add_param(Parameter('runtime', 0))
-        self.finished_leaves:int = 0
+        self.finished_leaves: int = 0
+        self.total_leaves: int = 0  # Total leaves for progress tracking
+        self.progress_bar: Optional[tqdm] = None
+        self.show_notebook_progress_bar: bool = False
+        self.error_handling = error_handling
+        self.errors: List[Dict[str, Any]] = []
 
         # Namespaces
         self.add = self.AddNamespace(self)  # Instantiate the namespace
@@ -92,7 +105,6 @@ class AnalysisModule():
         self.t0 = None
         self.leaf_data: List[Dict[str, Any]] = []
         self.runtime: Optional[float] = None
-
 
         pass
 
@@ -266,6 +278,7 @@ class AnalysisModule():
             self.parent.sequence.append(Optimize(func, opt_param_ids, assign_to, direction, optimizer, tol, bounds, options, condition, **kwargs))
 
     def run(self,
+            show_notebook_progress_bar = False
             # create_pandas = True,
             # verbose = True
         )  -> Dict[str, Any]:
@@ -274,9 +287,21 @@ class AnalysisModule():
         Returns:
             Dict[str, Any]: Dictionary containing the results DataFrame, runtime, and number of finished leaves.
         """
+        # Pre analysis
+        # Calculate total leaves
+        self.total_leaves = 1
+        for step in self.sequence:
+            if isinstance(step, Fork):
+                self.total_leaves *= len(step.configurations)
+        # Initialize progress bar
+        if show_notebook_progress_bar:
+            self.show_notebook_progress_bar = True
+            self.progress_bar = tqdm(total=self.total_leaves, desc="Processing leaves", unit="leaf")
+
         self.t0 = time.time()
         self.finished_leaves = 0
         self.leaf_data = []  # Reset leaf data
+        self.errors = []  # Reset errors
         try:
             self._process(self.init_paramset, step_idx=0) # start on step 0
         except Exception as e:
@@ -289,8 +314,10 @@ class AnalysisModule():
 
         return dict(
             df = df,
+            leaf_data = self.leaf_data,
             runtime = self.runtime,
             finished_leaves = self.finished_leaves,
+            errors = self.errors,
         )
 
     def _process(self, paramset: ParameterSet, step_idx:int):
@@ -310,14 +337,46 @@ class AnalysisModule():
             try:
                 run_step = paramset.call_with_kwargs(step.condition) if step.condition else True
             except Exception as e:
-                raise RuntimeError(f"Error evaluating step condition: {str(e)}") from e
+                error_info = {
+                    'step_idx': step_idx,
+                    'step_type': type(step).__name__,
+                    'details': step.get_details(),
+                    'paramset_values': paramset.values_dict.copy(),
+                    'error': str(e),
+                    'is_condition': True
+                }
+                self.errors.append(error_info)
+                if self.error_handling == 'exit':
+                    raise RuntimeError(f"Error evaluating step condition: {str(e)}") from e
+                elif self.error_handling == 'skip_leaf':
+                    self._end_sequence(paramset)
+                    return
+                elif self.error_handling == 'continue_leaf':
+                    run_step = True
 
             # Run the analysis step
             t0 = time.time()
             try:
                 new_paramsets = step.run(paramset) if run_step else (copy.deepcopy(paramset),)
             except Exception as e:
-                raise RuntimeError(f"Error executing step: {str(e)}") from e
+                error_info = {
+                    'step_idx': step_idx,
+                    'step_type': type(step).__name__,
+                    'details': step.get_details(),
+                    'paramset_values': paramset.values_dict.copy(),
+                    'error': str(e),
+                    'is_condition': False
+                }
+                self.errors.append(error_info)
+                print(f"Error in execution of {error_info['step_type']} at step {step_idx}: {str(e)}")
+                if self.error_handling == 'exit':
+                    raise RuntimeError(f"Error executing step: {str(e)}") from e
+                elif self.error_handling == 'skip_leaf':
+                    self._end_sequence(paramset)
+                    return
+                elif self.error_handling == 'continue_leaf':
+                    new_paramsets = (copy.deepcopy(paramset),)
+
             step_runtime = time.time() - t0
         
             # Handle branch termination
@@ -345,4 +404,18 @@ class AnalysisModule():
         leaf_dict = paramset.values_dict.copy()
         leaf_dict['datetime'] = datetime.now()
         self.leaf_data.append(leaf_dict)
+
+        # Update progress bar
+        elapsed_time = time.time() - self.t0
+        if self.finished_leaves > 0 and self.total_leaves > 0:
+            eta = (elapsed_time / self.finished_leaves) * (self.total_leaves - self.finished_leaves)
+        else:
+            eta = 0.0
+        progress_desc = (
+            f"{self.finished_leaves}/{self.total_leaves} leaves ({self.finished_leaves/self.total_leaves*100:.1f}%) "
+            f"| Elapsed: {elapsed_time:.1f}s | ETA: {eta:.1f}s"
+        )
+        if self.show_notebook_progress_bar:
+            self.progress_bar.set_description(progress_desc)
+            self.progress_bar.update(1)
 
