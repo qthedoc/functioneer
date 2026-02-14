@@ -1,4 +1,23 @@
 # Changelog
+## [0.6.0](https://github.com/qthedoc/functioneer/compare/v0.5.0...v0.6.0) (2026-02-14)
+
+
+### Features
+
+* error handling and progress prints ([42dcf2d](https://github.com/qthedoc/functioneer/commit/42dcf2d5406e4cd713ea0ceaed0a5b5f0348ac23))
+* forks can handle np.array ([37be368](https://github.com/qthedoc/functioneer/commit/37be3689488108d36eb1b0c3f753e3e84414b402))
+
+
+### Bug Fixes
+
+* match_w_kwargs allows passing of **kwargs ([b520aa2](https://github.com/qthedoc/functioneer/commit/b520aa225c8c432b2bdee8cb55ed46666b692306))
+
+
+### Documentation
+
+* cleanup ([1b74538](https://github.com/qthedoc/functioneer/commit/1b745383787fed7ab6b73c286ccb830534be4447))
+* update rosenbrock lingo ([8a1c21f](https://github.com/qthedoc/functioneer/commit/8a1c21f3840c271f946395874e7795d8ffa4e0d4))
+
 ## [0.5.0](https://github.com/qthedoc/functioneer/compare/v0.4.2...v0.5.0) (2025-06-24)
 
 ### Important Updates
