@@ -32,8 +32,8 @@ from functioneer.parameter import ParameterSet, Parameter
 
 ## TODO: work towards staged analysis (eg. needed for pick best 10) 
 # allow for a tuple of dicts for starting with multiple parameter sets, 
-# also might allow sending in of the pandas datafram to add to it (if not just append new rows when done with sub analysis)
-# pandas_to_paramsets: a function that takes in a pd and returns a tuple of paramsets ready to be fed into the next stage of analysis
+# also might allow sending in of the pandas datafram to add to it (if not just append new rows when done with sub analysis) 
+# pandas_to_paramsets: a function that takes in a pd and returns a tuple of paramsets ready to be fed into the next stage of analysis 
 class AnalysisModule():
     """
     The central container for an analysis pipeline in functioneer.
@@ -185,6 +185,7 @@ class AnalysisModule():
                 if not isinstance(value_list, (list, tuple)):
                     raise ValueError("value_list must be a list or tuple of parameter values")
                 configurations = [{param_or_dict_or_configs: value} for value in value_list]
+                # raise DeprecationWarning(".fork('param', (0, 1, 2)) is being depreciated, please use a 'value dict' .fork({'param', (0, 1, 2)})")
 
             # Multiple Parameters
             elif isinstance(param_or_dict_or_configs, dict):

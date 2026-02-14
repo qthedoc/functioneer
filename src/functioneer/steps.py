@@ -588,6 +588,65 @@ class Optimize(AnalysisStep):
 
         return (next_paramset,)
     
+    # TODO: implement kw optimizer
+    # def run(self, paramset: ParameterSet) -> Tuple[ParameterSet, ...]:
+    #     """Run the optimization step on the given parameter set."""
+    #     # Validate
+    #     if self.condition is not None and not self.condition(paramset):
+    #         return (paramset,)
+
+    #     # Copy
+    #     next_paramset = copy.deepcopy(paramset)
+
+    #     # Initial parameters (x0)
+    #     try:
+    #         x0 = np.array([next_paramset[id].value for id in self.opt_param_ids], dtype=float)
+    #         if not all(np.isfinite(x0)):
+    #             raise ValueError(f"Initial values {x0} must be finite")
+    #     except KeyError as e:
+    #         raise ValueError(f"Parameter ID {e} not found in paramset") from e
+    #     except (TypeError, ValueError) as e:
+    #         raise ValueError(f"Invalid initial values {x0}: {str(e)}") from e
+
+    #     # Prepare bounds
+    #     bounds_list = None
+    #     if self.bounds is not None:
+    #         bounds_list = [self.bounds.get(id, (None, None)) for id in self.opt_param_ids]
+
+    #     # Run optimization using minimize_keywords
+    #     try:
+    #         results = minimize_keywords(
+    #             func=self.func,
+    #             x0=x0,
+    #             param_ids=self.opt_param_ids,
+    #             method=self.optimizer,
+    #             bounds=bounds_list,
+    #             constraints=self.kwargs.get('constraints', ()),
+    #             tol=self.tol,
+    #             options=self.options,
+    #             direction=self.direction,
+    #             **{k: v for k, v in self.kwargs.items() if k != 'constraints'}
+    #         )
+
+    #         # Validate results
+    #         if not results.success:
+    #             raise RuntimeError(f"Optimization did not converge: {results.message}")
+    #         if len(self.opt_param_ids) != len(results.x):
+    #             raise ValueError(f"Result length {len(results.x)} does not match opt_param_ids length {len(self.opt_param_ids)}")
+    #         if not all(np.isfinite(results.x)):
+    #             raise ValueError(f"Optimization returned non-finite parameters: {results.x}")
+    #         if not np.isfinite(results.fun):
+    #             raise ValueError(f"Optimization returned non-finite objective value: {results.fun}")
+
+    #         # Update parameter set
+    #         next_paramset.update_param_values(dict(zip(self.opt_param_ids, results.x)))
+    #         next_paramset.update_param(self.assign_to, value=results.fun)
+
+    #     except Exception as e:
+    #         raise RuntimeError(f"Optimization error: {str(e)}") from e
+
+    #     return (next_paramset,)
+    
     def get_details(self) -> Dict[str, Any]:
         details = super().get_details()
         details.update({
