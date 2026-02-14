@@ -10,24 +10,13 @@ Functioneer is the ultimate batch runner. Prepare to be an analysis ninja, effor
 
 ## Quick Start
 
-**Full set of examples**: [Examples.ipynb (nbviewer.org)](https://nbviewer.org/github/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
-*This is currently the main form of documentation.
-
-### Installation
+**Install:**
 ```
 pip install functioneer
 ```
 
-### Choose a Function to Analyze
-Choose any function(s) you like. We use the [Rosenbrock Function](https://en.wikipedia.org/wiki/Rosenbrock_function) in these examples for its simplicity, many inputs and its popular use as an optimization benchmark.
-
-```
-import functioneer as fn
-
-# Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
-def rosenbrock(x, y, a, b):
-    return (a-x)**2 + b*(y-x**2)**2
-```
+**Full set of examples**: [Examples.ipynb (nbviewer.org)](https://nbviewer.org/github/qthedoc/functioneer/blob/main/examples/Examples.ipynb)*\
+*This is currently the main form of documentation.
 
 ### Example 1: Forks and Function Evaluation (The Basics)
 
@@ -36,24 +25,30 @@ def rosenbrock(x, y, a, b):
 Note: forks for `x` and `y` create a 'grid' of values\
 Note: Parameter IDs MUST match your function's args, function evals inside functioneer are fully keyword arg based.
 ```
-analysis = fn.AnalysisModule() # Create new analysis
+from functioneer import AnalysisModule
+
+# Rosenbrock function (known minimum of 0 at: x=1, y=1, a=1, b=100)
+def rosenbrock_2d(x, y, a, b):
+    return (a-x)**2 + b*(y-x**2)**2
+
+analysis = AnalysisModule() # Create new analysis
 analysis.add.define({'a': 1, 'b': 100}) # define a and b
 analysis.add.fork('x', (0, 1, 2)) # Fork analysis, create branches for x=0, x=1, x=2
 analysis.add.fork('y', (1, 10))
-analysis.add.evaluate(func=rosenbrock) #
+analysis.add.evaluate(func=rosenbrock_2d) #
 results = analysis.run()
 print('Example 1 Output:')
-print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
+print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock_2d']])
 ```
 ```
 Example 1 Output:
-   a    b  x   y  rosenbrock
-0  1  100  0   1         101
-1  1  100  0  10       10001
-2  1  100  1   1           0
-3  1  100  1  10        8100
-4  1  100  2   1         901
-5  1  100  2  10        3601
+   a    b  x   y  rosenbrock_2d
+0  1  100  0   1            101
+1  1  100  0  10          10001
+2  1  100  1   1              0
+3  1  100  1  10           8100
+4  1  100  2   1            901
+5  1  100  2  10           3601
 ```
 
 ### Example 2: Optimization
@@ -62,23 +57,28 @@ Example 1 Output:
 
 Note: values for `x` and `y` before optimization are used as initial guesses
 ```
-analysis = fn.AnalysisModule({'x': 0, 'y': 0})
+from functioneer import AnalysisModule
+
+def rosenbrock_2d(x, y, a, b):
+    return (a-x)**2 + b*(y-x**2)**2
+
+analysis = AnalysisModule({'x': 0, 'y': 0})
 analysis.add.fork('a', (1, 2))
 analysis.add.fork('b', (0, 100, 200))
-analysis.add.optimize(func=rosenbrock, opt_param_ids=('x', 'y'))
+analysis.add.optimize(func=rosenbrock_2d, opt_param_ids=('x', 'y'))
 results = analysis.run()
 print('\nExample 2 Output:')
-print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock']])
+print(results['df'][['a', 'b', 'x', 'y', 'rosenbrock_2d']])
 ```
 ```
 Example 2 Output:
-   a    b         x         y    rosenbrock
-0  1    0  1.000000  0.000000  4.930381e-32
-1  1  100  0.999763  0.999523  5.772481e-08
-2  1  200  0.999939  0.999873  8.146869e-09
-3  2    0  2.000000  0.000000  0.000000e+00
-4  2  100  1.999731  3.998866  4.067518e-07
-5  2  200  1.999554  3.998225  2.136755e-07
+   a    b         x         y    rosenbrock_2d
+0  1    0  1.000000  0.000000     4.930381e-32
+1  1  100  0.999763  0.999523     5.772481e-08
+2  1  200  0.999939  0.999873     8.146869e-09
+3  2    0  2.000000  0.000000     0.000000e+00
+4  2  100  1.999731  3.998866     4.067518e-07
+5  2  200  1.999554  3.998225     2.136755e-07
 ```
 ## Key Features
 
