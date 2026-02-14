@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import time
-from tqdm.notebook import tqdm
+# from tqdm.notebook import tqdm
 
 from functioneer.steps import AnalysisStep, Define, Fork, Evaluate, Optimize
 from functioneer.parameter import ParameterSet, Parameter
@@ -92,8 +92,8 @@ class AnalysisModule():
         self.init_paramset.add_param(Parameter('runtime', 0))
         self.finished_leaves: int = 0
         self.total_leaves: int = 0  # Total leaves for progress tracking
-        self.progress_bar: Optional[tqdm] = None
-        self.show_notebook_progress_bar: bool = False
+        # self.progress_bar: Optional[tqdm] = None
+        # self.show_notebook_progress_bar: bool = False
         self.error_handling = error_handling
         self.errors: List[Dict[str, Any]] = []
 
@@ -279,7 +279,7 @@ class AnalysisModule():
             self.parent.sequence.append(Optimize(func, opt_param_ids, assign_to, direction, optimizer, tol, bounds, options, condition, **kwargs))
 
     def run(self,
-            show_notebook_progress_bar = False
+            # show_notebook_progress_bar = False
             # create_pandas = True,
             # verbose = True
         )  -> Dict[str, Any]:
@@ -295,9 +295,9 @@ class AnalysisModule():
             if isinstance(step, Fork):
                 self.total_leaves *= len(step.configurations)
         # Initialize progress bar
-        if show_notebook_progress_bar:
-            self.show_notebook_progress_bar = True
-            self.progress_bar = tqdm(total=self.total_leaves, desc="Processing leaves", unit="leaf")
+        # if show_notebook_progress_bar:
+        #     self.show_notebook_progress_bar = True
+            # self.progress_bar = tqdm(total=self.total_leaves, desc="Processing leaves", unit="leaf")
 
         self.t0 = time.time()
         self.finished_leaves = 0
@@ -416,7 +416,7 @@ class AnalysisModule():
             f"{self.finished_leaves}/{self.total_leaves} leaves ({self.finished_leaves/self.total_leaves*100:.1f}%) "
             f"| Elapsed: {elapsed_time:.1f}s | ETA: {eta:.1f}s"
         )
-        if self.show_notebook_progress_bar:
-            self.progress_bar.set_description(progress_desc)
-            self.progress_bar.update(1)
+        # if self.show_notebook_progress_bar:
+        #     self.progress_bar.set_description(progress_desc)
+        #     self.progress_bar.update(1)
 
