@@ -7,14 +7,21 @@ Inherently people only care about the presentation! the plot, the chart, the res
 Thats why we do analysis! The computation (and any other preliminary step) requires thinking backwards, which slows us down!
 Currently functioneer only helps with the computation (getting a big ass table of data).
 But it should be possible to combine the setting up of the computation AND the presentation.
-For example: When I define a fork I probably already know that fork is going to be my X axis on a line plot.
+For example: When I define a fork I probably already know that fork is going play then'role' of the X axis on a line plot.
 
-More examples:
-- set a fork as plot x-axis
-- set a fork to be multiple series in a plot
+More examples of axis roles:
+- plot x-axis
+- plot y-axis  (surface plot)
+- time-axis (animations)
+- color
+- series: multiple lines
 - set up a mesh grid for a surface plot
+- sub plots
+- multiple plots
 - set a fork to be aggregated (mean, std, mean /w std error bars, max, min)
 - set an evaluation to be set as error bars
+- set multiple aggregations from one y_value/grouping (e.g., mean, std, max, min, custom, etc)
+- allow custom aggregation function
 
 Functioneer Output:
 - By default I feel functioning should remain as just a big ass table generator but we should make these plotting options very available.
